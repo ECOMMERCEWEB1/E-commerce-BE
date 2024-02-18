@@ -48,7 +48,7 @@ public class UsersController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable(value = "id") Long id) {
         if (!usersService.userIdExists(id))
             usersService.deleteUser(id);
         else
