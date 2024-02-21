@@ -35,12 +35,12 @@ public class Product {
     // private Category category;
     // to uncomment after adding category table
 
-    @NotBlank(message="each product should have a price")
+    @NotNull(message="each product should have a price")
     private double price;
 
-    @NotBlank(message="each product should have a brand")
+    @NotNull(message="each product should have a brand")
     private Brand brand;
 
-    @NotBlank(message="each product should have a status")
+    @NotNull(message="each product should have a status")
     private Status status;
 }
