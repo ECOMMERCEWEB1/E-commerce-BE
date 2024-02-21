@@ -35,34 +35,79 @@ public class ProductsController {
         public ResponseEntity<List<Product>> getProducts() {
         return ResponseEntity.ok().body(productsService.getProducts());
     }
+    @GetMapping("/products/{id}")
+    public ResponseEntity<?> getProductById(@PathVariable(value = "id") Long id) {
+        Product product = productsService.getProductById(id);
+        if (product!=null)
+            return ResponseEntity.ok().body(product);
+        else
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("This product does not exist !"));
+    }
+
 
     @PostMapping("/products")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid Product product) throws URISyntaxException {
         if (productsService.productNameExists(product.getName()))
-            return ResponseEntity.internalServerError().body(new ProductDTO(product, "Product already exists !"));
+            return ResponseEntity.
+                    internalServerError().
+                    body(new ProductDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getBrand(),
+                    product.getStatus(),
+                    "Product already exists !"));
         else
             productsService.createProduct(product);
-        return ResponseEntity.created(new URI("/api/products")).body(new ProductDTO(product, "product created successfully !"));       
+        return ResponseEntity.
+                created(new URI("/api/products")).
+                body(new ProductDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getPrice(),
+                        product.getBrand(),
+                        product.getStatus(),
+                        "product created successfully !"));
     }
 
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable(value = "id") Long id, @Valid @RequestBody Product product) {
         if (!productsService.productIdExists(id))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductDTO(product, "ID does not exist !"));
+            return ResponseEntity.
+                    status(HttpStatus.NOT_FOUND).
+                    body(new ProductDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getBrand(),
+                    product.getStatus(),
+                     "ID does not exist !"));
         else
         {
-            productsService.updateProduct(id, product);
-            return ResponseEntity.ok().body(new ProductDTO(product, "Product updated successfully !"));
+            Product updated_product = productsService.updateProduct(id, product);
+            return ResponseEntity.
+                    ok().
+                    body(new ProductDTO(
+                            updated_product.getId(),
+                            updated_product.getName(),
+                            updated_product.getDescription(),
+                            updated_product.getPrice(),
+                            updated_product.getBrand(),
+                            updated_product.getStatus(),
+                            "Product updated successfully !"));
         }
     }
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable(value = "id") Long id)
     {
-        if (!productsService.productIdExists(id))
+        if (productsService.productIdExists(id))
         {
             productsService.deleteProduct(id);
-            return ResponseEntity.ok().body(new MessageDTO("Product Deleted Successfully !"));
+            return ResponseEntity.ok().body(new MessageDTO("Product deleted successfully !"));
         }
         else
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Product does not exist"));

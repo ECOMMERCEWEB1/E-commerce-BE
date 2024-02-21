@@ -36,7 +36,7 @@ public class Product {
     // to uncomment after adding category table
 
     @NotNull(message="each product should have a price")
-    private double price;
+    private Double price;
 
     @NotNull(message="each product should have a brand")
     private Brand brand;

@@ -3,6 +3,7 @@ package com.webproject.ecommerce.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.webproject.ecommerce.entities.User;
 import org.springframework.stereotype.Service;
 
 import com.webproject.ecommerce.entities.Product;
@@ -61,11 +62,11 @@ public class ProductsService {
 
         if (checkIfProductExists.isPresent()) {
             Product productToUpdate = checkIfProductExists.get();
-            productToUpdate.setName(product.getName());
-            productToUpdate.setDescription(product.getDescription());
-            productToUpdate.setPrice(product.getPrice());
-            productToUpdate.setBrand(product.getBrand());
-            productToUpdate.setStatus(product.getStatus());
+            if(product.getName()!=null)productToUpdate.setName(product.getName());
+            if(product.getDescription()!=null)productToUpdate.setDescription(product.getDescription());
+            if(product.getPrice()!=null)productToUpdate.setPrice(product.getPrice());
+            if(product.getBrand()!=null)productToUpdate.setBrand(product.getBrand());
+            if(product.getStatus()!=null)productToUpdate.setStatus(product.getStatus());
 
             productsRepository.save(productToUpdate);
             return productToUpdate;
@@ -74,7 +75,7 @@ public class ProductsService {
         {
             return new Product();
         }
-        
+
     }
 
     public void deleteProduct(Long id)
@@ -91,6 +92,11 @@ public class ProductsService {
     public boolean productIdExists(Long id)
     {
         return productsRepository.findById(id).isPresent();
+    }
+
+    public Product getProductById(Long id){
+        Optional<Product> product = productsRepository.findById(id);
+        return product.orElse(null);
     }
 } 
 

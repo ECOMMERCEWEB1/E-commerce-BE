@@ -9,7 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-
+import java.util.List;
+import com.webproject.ecommerce.entities.Product;
 @Entity
 @Getter
 @Setter
@@ -33,12 +34,11 @@ public class User {
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    // IN CART PRODUCTS --> COMMENTED WHILE PRODUCTS AREN'T MADE
-    //@ManyToMany
-    //@JoinTable(
-    //        name="user_products",
-    //        joinColumns=@JoinColumn(name="user_id"),
-    //        inverseJoinColumns=@JoinColumn(name="product_id")
-    //)
-    //private List<Product> products;
+    @ManyToMany
+    @JoinTable(
+         name="user_products",
+       joinColumns=@JoinColumn(name="user_id"),
+         inverseJoinColumns=@JoinColumn(name="product_id")
+    )
+    private List<Product> products;
 }

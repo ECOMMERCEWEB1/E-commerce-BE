@@ -4,6 +4,7 @@ import com.webproject.ecommerce.repositories.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -15,14 +16,19 @@ public class UsersService {
     public List<User> getUsers(){
         return usersRepository.findAll();
     }
+    public User getUserById(Long id)
+    {
+        Optional<User> user = usersRepository.findUserById(id);
+        return user.orElse(null);
+    }
     public boolean userEmailExists(String email){
         return usersRepository.findUserByEmail(email).isPresent();
     }
     public boolean userIdExists(Long id){
-        return !usersRepository.existsById(id);
+        return usersRepository.existsById(id);
     }
-    public void createUser(User user){
-        usersRepository.save(user);
+    public User createUser(User user){
+         return usersRepository.save(user);
     }
     public boolean userIdCheck(User user, Long id){
         if (!id.equals(user.getId())){
@@ -39,10 +45,10 @@ public class UsersService {
                            String email,
                            Long id){
        User db_user = usersRepository.findUserById(id).get();
-       db_user.setEmail(email);
-       db_user.setFirstName(firstName);
-       db_user.setLastName(lastName);
-       db_user.setAge(age);
+       if(email!=null)db_user.setEmail(email);
+       if(firstName!=null)db_user.setFirstName(firstName);
+       if(lastName!=null)db_user.setLastName(lastName);
+       if(age!=null)db_user.setAge(age);
        usersRepository.save(db_user);
        return db_user;
     }
