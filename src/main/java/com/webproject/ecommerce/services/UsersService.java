@@ -39,10 +39,10 @@ public class UsersService {
                            String email,
                            Long id){
        User db_user = usersRepository.findUserById(id).get();
-       db_user.setEmail(email);
-       db_user.setFirstName(firstName);
-       db_user.setLastName(lastName);
-       db_user.setAge(age);
+       if (email!=null)db_user.setEmail(email);
+       if(firstName!=null)db_user.setFirstName(firstName);
+       if(lastName!=null)db_user.setLastName(lastName);
+       if(age!=null)db_user.setAge(age);
        usersRepository.save(db_user);
        return db_user;
     }

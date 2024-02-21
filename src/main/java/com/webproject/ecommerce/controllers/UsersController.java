@@ -38,13 +38,14 @@ public class UsersController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User user) {
+        User updated_user;
         if (usersService.userIdExists(id))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserDTO(user, "ID does not exist !"));
         else if (!usersService.userIdCheck(user, id))
             return ResponseEntity.badRequest().body(new UserDTO(user, "IDs must match !"));
         else
-            usersService.updateUser(user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail(), id);
-        return ResponseEntity.ok().body(new UserDTO(user, "User updated successfully !"));
+            updated_user = usersService.updateUser(user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail(), id);
+        return ResponseEntity.ok().body(new UserDTO(updated_user, "User updated successfully !"));
     }
 
     @DeleteMapping("/users/{id}")
@@ -53,6 +54,6 @@ public class UsersController {
             usersService.deleteUser(id);
         else
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("User does not exist !"));
-        return ResponseEntity.ok().body(new MessageDTO("User Deleted Successfully !"));
+        return ResponseEntity.ok().body(new MessageDTO("User deleted Successfully !"));
     }
 }
