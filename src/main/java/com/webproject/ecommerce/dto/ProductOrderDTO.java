@@ -1,7 +1,6 @@
 package com.webproject.ecommerce.dto;
 
-import com.webproject.ecommerce.entities.Product;
-
+import com.webproject.ecommerce.entities.ProductOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ProductDTO {
-    private Product product;
+public class ProductOrderDTO {
+    private ProductOrder productOrder;
     private String message;
 }

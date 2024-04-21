@@ -1,7 +1,8 @@
 package com.webproject.ecommerce.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.webproject.ecommerce.enums.Brand;
-import com.webproject.ecommerce.enums.Status;
+import com.webproject.ecommerce.enums.OrderItemStatus;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -30,17 +31,18 @@ public class Product {
 
     private String description;
 
-    // @ManyToOne
-    // @JoinColumn(name = "category_id")
-    // private Category category;
-    // to uncomment after adding category table
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "products" }, allowSetters = true)
+    private ProductCategory productCategory;
 
-    @NotBlank(message="each product should have a price")
+    @NotNull
+    @DecimalMin(value = "0")
+    @Column(name = "price", precision = 21, scale = 2, nullable = false)
     private double price;
 
     @NotBlank(message="each product should have a brand")
     private Brand brand;
 
     @NotBlank(message="each product should have a status")
-    private Status status;
+    private OrderItemStatus orderItemStatus;
 }

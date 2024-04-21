@@ -1,0 +1,175 @@
+package com.webproject.ecommerce.controllers;
+
+import com.webproject.ecommerce.dto.MessageDTO;
+import com.webproject.ecommerce.dto.ProductOrderDTO;
+import com.webproject.ecommerce.entities.ProductOrder;
+import com.webproject.ecommerce.repositories.ProductOrderRepository;
+import com.webproject.ecommerce.services.ProductOrderService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * REST controller for managing {@link com.webproject.ecommerce.entities.ProductOrder}.
+ */
+@RestController
+@RequestMapping("/api/product-orders")
+public class ProductOrderController {
+
+    private final Logger log = LoggerFactory.getLogger(ProductOrderController.class);
+
+    private static final String ENTITY_NAME = "productProductOrder";
+
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
+    private final ProductOrderService productOrderService;
+
+    private final ProductOrderRepository productOrderRepository;
+
+    public ProductOrderController(ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
+        this.productOrderService = productOrderService;
+        this.productOrderRepository = productOrderRepository;
+    }
+
+    /**
+     * {@code POST  /product-orders} : Create a new productOrder.
+     *
+     * @param productOrder the productOrder to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new productOrder, or with status {@code 400 (Bad Request)} if the productOrder has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("")
+    public ResponseEntity<ProductOrderDTO> createProductOrder(@Valid @RequestBody ProductOrder productOrder) throws URISyntaxException {
+        log.debug("REST request to save ProductOrder : {}", productOrder);
+        if (productOrder.getId() != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Product Order already has an Id !"));
+        }
+        ProductOrder result = productOrderService.save(productOrder);
+        return ResponseEntity
+                .created(new URI("/api/product-orders/" + result.getId()))
+                .body(new ProductOrderDTO(productOrder, "product order created successfully !"));
+
+    }
+
+    /**
+     * {@code PUT  /product-orders/:id} : Updates an existing productOrder.
+     *
+     * @param id the id of the productOrder to save.
+     * @param productOrder the productOrder to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated productOrder,
+     * or with status {@code 400 (Bad Request)} if the productOrder is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the productOrder couldn't be updated.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductOrderDTO> updateProductOrder(
+            @PathVariable(value = "id", required = false) final Long id,
+            @Valid @RequestBody ProductOrder productOrder
+    ){
+        log.debug("REST request to update ProductOrder : {}, {}", id, productOrder);
+        if (productOrder.getId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID (Null value) !"));
+        }
+        if (!Objects.equals(id, productOrder.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID, query parameter ID:"+id+" != product order's Id:"+productOrder.getId()+" !"));
+        }
+        if (!productOrderRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductOrderDTO(productOrder, "ID does not exist !"));
+        }
+
+        ProductOrder result = productOrderService.update(productOrder);
+        return ResponseEntity
+                .ok()
+                .body(new ProductOrderDTO(result, "Product Order created successfully!"));
+    }
+
+    /**
+     * {@code PATCH  /product-orders/:id} : Partial updates given fields of an existing productOrder, field will ignore if it is null
+     *
+     * @param id the id of the productOrder to save.
+     * @param productOrder the productOrder to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated productOrder,
+     * or with status {@code 400 (Bad Request)} if the productOrder is not valid,
+     * or with status {@code 404 (Not Found)} if the productOrder is not found,
+     * or with status {@code 500 (Internal Server Error)} if the productOrder couldn't be updated.
+     */
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<ProductOrderDTO> partialUpdateProductOrder(
+            @PathVariable(value = "id", required = false) final Long id,
+            @NotNull @RequestBody ProductOrder productOrder
+    ){
+        log.debug("REST request to partial update ProductOrder partially : {}, {}", id, productOrder);
+        if (productOrder.getId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID (Null value) !"));
+        }
+        if (!Objects.equals(id, productOrder.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID, query parameter ID:"+id+" != product order's Id:"+productOrder.getId()+" !"));
+        }
+
+        if (!productOrderRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductOrderDTO(productOrder, "ID does not exist !"));
+        }
+
+        Optional<ProductOrder> result = productOrderService.partialUpdate(productOrder);
+
+        return result.map(order -> ResponseEntity
+                        .ok()
+                        .body(new ProductOrderDTO(order, "Product Order updated successfully !")))
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ProductOrderDTO(productOrder, "Could not update the product order. Internal server error!")));
+    }
+
+    /**
+     * {@code GET  /product-orders} : get all the productOrders.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of productOrders in body.
+     */
+    @GetMapping("")
+    public ResponseEntity<List<ProductOrder>> getAllProductOrders() {
+        log.debug("REST request to get a page of ProductOrders");
+        List<ProductOrder> list = productOrderService.findAll();
+        return ResponseEntity.ok().body(list);
+    }
+
+    /**
+     * {@code GET  /product-orders/:id} : get the "id" productOrder.
+     *
+     * @param id the id of the productOrder to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the productOrder, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductOrder> getProductOrder(@PathVariable("id") Long id) {
+        log.debug("REST request to get ProductOrder : {}", id);
+        Optional<ProductOrder> productOrder = productOrderService.findOne(id);
+        return ResponseEntity.of(productOrder);
+    }
+
+    /**
+     * {@code DELETE  /product-orders/:id} : delete the "id" productOrder.
+     *
+     * @param id the id of the productOrder to delete.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProductOrder(@PathVariable("id") Long id) {
+        log.debug("REST request to delete ProductOrder : {}", id);
+        if(productOrderService.findOne(id).isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Product Order does not exist"));
+        productOrderService.delete(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(new MessageDTO("Product Order Deleted Successfully!"));
+    }
+}
+

@@ -1,6 +1,7 @@
 package com.webproject.ecommerce.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -9,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,6 +36,12 @@ public class User {
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer" )
+    @JsonIgnoreProperties(value = {"customer"}, allowSetters = true)
+    private Set<ProductOrder> orders;
+
+    // Moetez : ???
     // IN CART PRODUCTS --> COMMENTED WHILE PRODUCTS AREN'T MADE
     //@ManyToMany
     //@JoinTable(
