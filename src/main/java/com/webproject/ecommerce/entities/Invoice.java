@@ -1,6 +1,5 @@
 package com.webproject.ecommerce.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.webproject.ecommerce.enums.InvoiceStatus;
 import com.webproject.ecommerce.enums.PaymentMethod;
 import jakarta.persistence.*;
@@ -8,15 +7,12 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * An Invoice.
  */
 @Entity
 @Table(name = "invoice")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Invoice implements Serializable {
 
