@@ -1,15 +1,10 @@
 package com.webproject.ecommerce.dto;
 
-import com.webproject.ecommerce.entities.Product;
-
 import com.webproject.ecommerce.enums.Brand;
-import com.webproject.ecommerce.enums.Status;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.webproject.ecommerce.enums.OrderItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -20,6 +15,6 @@ public class ProductDTO {
     private String description;
     private Double price;
     private Brand brand;
-    private Status status;
+    private OrderItemStatus status;
     private String message;
 }

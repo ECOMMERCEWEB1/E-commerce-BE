@@ -28,11 +28,6 @@ public class ProductOrderController {
 
     private final Logger log = LoggerFactory.getLogger(ProductOrderController.class);
 
-    private static final String ENTITY_NAME = "productProductOrder";
-
-    @Value("${jhipster.clientApp.name}")
-    private String applicationName;
-
     private final ProductOrderService productOrderService;
 
     private final ProductOrderRepository productOrderRepository;

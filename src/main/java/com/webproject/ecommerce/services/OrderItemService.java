@@ -91,7 +91,7 @@ public class OrderItemService {
      * @return the list of entities.
      */
     public List<OrderItem> findAllWithEagerRelationships() {
-        return orderItemRepository.findAllWithEagerRelationships();
+        return orderItemRepository.findAll();
     }
 
     /**
@@ -103,7 +103,7 @@ public class OrderItemService {
     @Transactional(readOnly = true)
     public Optional<OrderItem> findOne(Long id) {
         log.debug("Request to get OrderItem : {}", id);
-        return orderItemRepository.findOneWithEagerRelationships(id);
+        return orderItemRepository.findById(id);
     }
 
     /**

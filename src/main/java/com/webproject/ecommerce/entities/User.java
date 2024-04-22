@@ -57,16 +57,6 @@ public class User implements UserDetails {
     @JsonIgnoreProperties(value = {"customer"}, allowSetters = true)
     private Set<ProductOrder> orders;
 
-    // Moetez : ???
-    // IN CART PRODUCTS --> COMMENTED WHILE PRODUCTS AREN'T MADE
-    //@ManyToMany
-    //@JoinTable(
-    //        name="user_products",
-    //        joinColumns=@JoinColumn(name="user_id"),
-    //        inverseJoinColumns=@JoinColumn(name="product_id")
-    //)
-    //private List<Product> products;
-
     @Enumerated(EnumType.STRING)
     private Role role;
     @Override

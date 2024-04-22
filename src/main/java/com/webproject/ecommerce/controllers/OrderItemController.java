@@ -30,11 +30,6 @@ public class OrderItemController {
 
     private final Logger log = LoggerFactory.getLogger(OrderItemController.class);
 
-    private static final String ENTITY_NAME = "productOrderItem";
-
-    @Value("${jhipster.clientApp.name}")
-    private String applicationName;
-
     private final OrderItemService orderItemService;
 
     private final OrderItemRepository orderItemRepository;

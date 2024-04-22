@@ -39,13 +39,11 @@ public class ProductOrder implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value={"order"})
-    @Column(name = "invoice")
     private Invoice invoice;
 
     @NotNull
     @ManyToOne(fetch =  FetchType.LAZY)
     @JsonIgnoreProperties(value = {"orders"}, allowSetters= true)
-    @Column(name = "customer", nullable = false)
     private User customer;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")

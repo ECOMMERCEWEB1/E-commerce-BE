@@ -1,11 +1,12 @@
 package com.webproject.ecommerce.controllers;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
+import com.webproject.ecommerce.dto.MessageDTO;
+import com.webproject.ecommerce.dto.ProductDTO;
+import com.webproject.ecommerce.entities.Product;
+import com.webproject.ecommerce.mappers.ProductMapper;
+import com.webproject.ecommerce.services.ProductsService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,23 +14,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.webproject.ecommerce.dto.MessageDTO;
-import com.webproject.ecommerce.dto.ProductDTO;
-import com.webproject.ecommerce.entities.Product;
-import com.webproject.ecommerce.services.ProductsService;
-
-import jakarta.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class ProductsController {
     private final ProductsService productsService;
 
+    private final ProductMapper productMapper;
+
     private final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
 
-    public ProductsController(ProductsService productsService) {
+    public ProductsController(ProductsService productsService, ProductMapper productMapper) {
         this.productsService = productsService;
+        this.productMapper = productMapper;
     }
 
     /**
@@ -73,33 +76,12 @@ public class ProductsController {
     public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid Product product) throws URISyntaxException {
         log.debug("REST request to save a Product : {}", product);
         if (product.getId() != null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductDTO(product, "Product already has an Id !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productMapper.toDto(product, "Product already has an Id !"));
         if (productsService.productNameExists(product.getName()))
-            return ResponseEntity.internalServerError().body(new ProductDTO(product, "Product already exists !"));
+            return ResponseEntity.internalServerError().body(productMapper.toDto(product, "Product already exists !"));
         Product result = productsService.createProduct(product);
-        return ResponseEntity.created(new URI("/api/products/"+ result.getId())).body(new ProductDTO(product, "product created successfully !"));
-            return ResponseEntity.
-                    internalServerError().
-                    body(new ProductDTO(
-                    product.getId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getPrice(),
-                    product.getBrand(),
-                    product.getStatus(),
-                    "Product already exists !"));
-        else
-            productsService.createProduct(product);
-        return ResponseEntity.
-                created(new URI("/api/products")).
-                body(new ProductDTO(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getBrand(),
-                        product.getStatus(),
-                        "product created successfully !"));
+        return ResponseEntity.created(new URI("/api/products/" + result.getId())).body(productMapper.toDto(
+                result, "Product Created Successfully !"));
     }
 
     /**
@@ -116,20 +98,14 @@ public class ProductsController {
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable(value = "id") Long id, @Valid @RequestBody Product product) {
         log.debug("REST request to update Product : {}, {}", id, product);
         if(product.getId() == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductDTO(product, "Invalid ID (Null value) !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productMapper.toDto(product, "Invalid ID (Null value) !"));
         if (!productsService.productIdExists(id))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductDTO(
-                    product.getId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getPrice(),
-                    product.getBrand(),
-                    product.getStatus(), "ID does not exist !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productMapper.toDto(product, "ID does not exist !"));
         if (!Objects.equals(id, product.getId()))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductDTO(product, "Invalid ID, query parameter ID:"+id+" != product's Id:"+product.getId()+" !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productMapper.toDto(product, "Invalid ID, query parameter ID:"+id+" != product's Id:"+product.getId()+" !"));
 
         Product result = productsService.updateProduct(product);
-            return ResponseEntity.ok().body(new ProductDTO(result, "Product updated successfully !"));
+            return ResponseEntity.ok().body(productMapper.toDto(result, "Product updated successfully !"));
     }
 
     /**
@@ -149,22 +125,15 @@ public class ProductsController {
     ){
         log.debug("REST request to partial update Product partially : {}, {}", id, product);
         if(product.getId() == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductDTO(product, "Invalid ID (Null value) !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productMapper.toDto(product, "Invalid ID (Null value) !"));
         if (!productsService.productIdExists(id))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductDTO(product, "ID does not exist !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productMapper.toDto(product, "ID does not exist !"));
         else
         {
-            Optional<Product> result = productsService.partialProduct(product);
-            if(result.isPresent())
-                return ResponseEntity.ok().body(new ProductDTO(
-                        result.get().getId(),
-                        result.get().getName(),
-                        result.get().getDescription(),
-                        result.get().getPrice(),
-                        result.get().getBrand(),
-                        result.get().getStatus(),
-                    "Product updated successfully !"));
-            else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ProductDTO(product,"Could not update the product. Internal server error!"));
+            Optional<Product> result = productsService.partialUpdate(product);
+            return result.map(value -> ResponseEntity.ok().body(productMapper.toDto(value,
+                    "Product updated successfully !")))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(productMapper.toDto(product, "Could not update the product. Internal server error!")));
         }
     }
 

@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class OrderItemDTO {
-    private OrderItem productCategory;
+    private OrderItem orderItem;
     private String message;
 }

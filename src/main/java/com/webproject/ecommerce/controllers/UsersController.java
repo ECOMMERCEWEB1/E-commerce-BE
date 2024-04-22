@@ -2,7 +2,7 @@ package com.webproject.ecommerce.controllers;
 
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.UserDTO;
-import com.webproject.ecommerce.entities.Product;
+import com.webproject.ecommerce.mappers.UserMapper;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.services.UsersService;
 import jakarta.validation.Valid;
@@ -19,7 +19,10 @@ import java.util.List;
 public class UsersController {
     private final UsersService usersService;
 
-    public UsersController(UsersService usersService) {
+    private final UserMapper userMapper;
+
+    public UsersController(UsersService usersService, UserMapper userMapper) {
+        this.userMapper = userMapper;
         this.usersService = usersService;
     }
 
@@ -41,25 +44,13 @@ public class UsersController {
         if (usersService.userEmailExists(user.getEmail()))
             return ResponseEntity.
                     internalServerError().
-                    body(new UserDTO(
-                            user.getId(),
-                            user.getFirstName(),
-                            user.getLastName(),
-                            user.getAge(),
-                            user.getEmail(),
-                            user.getProducts(),
+                    body(userMapper.toDto(user,
                             "Email already exists !"));
         else {
             User created_user = usersService.createUser(user);
             return ResponseEntity.
                     created(new URI("/api/users")).
-                    body(new UserDTO(
-                            created_user.getId(),
-                            created_user.getFirstName(),
-                            created_user.getLastName(),
-                            created_user.getAge(),
-                            created_user.getEmail(),
-                            created_user.getProducts(),
+                    body(userMapper.toDto(user,
                             "User created successfully !"));
         }
     }
@@ -70,34 +61,16 @@ public class UsersController {
         if (!usersService.userIdExists(id))
             return ResponseEntity.
                     badRequest().
-                    body(new UserDTO(
-                    user.getId(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getAge(),
-                    user.getEmail(),
-                    user.getProducts(),"ID does not exist !"));
+                    body(userMapper.toDto(user,"ID does not exist !"));
 
         else if (!usersService.userIdCheck(user, id))
             return ResponseEntity.
                     status(HttpStatus.NOT_FOUND).
-                    body(new UserDTO(
-                            user.getId(),
-                            user.getFirstName(),
-                            user.getLastName(),
-                            user.getAge(),
-                            user.getEmail(),
-                            user.getProducts(),
+                    body(userMapper.toDto(user,
                             "IDs must match !"));
         else {
             User updated_user = usersService.updateUser(user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail(), id);
-            return ResponseEntity.ok().body(new UserDTO(
-                    updated_user.getId(),
-                    updated_user.getFirstName(),
-                    updated_user.getLastName(),
-                    updated_user.getAge(),
-                    updated_user.getEmail(),
-                    updated_user.getProducts(), "User updated successfully !"));
+            return ResponseEntity.ok().body(userMapper.toDto(updated_user, "User updated successfully !"));
         }
     }
 

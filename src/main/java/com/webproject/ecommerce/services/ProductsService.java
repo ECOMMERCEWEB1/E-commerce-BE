@@ -95,8 +95,8 @@ public class ProductsService {
                     if (product.getBrand()!=null) {
                         existingProduct.setBrand(product.getBrand());
                     }
-                    if (product.getOrderItemStatus()!=null) {
-                        existingProduct.setOrderItemStatus(product.getOrderItemStatus());
+                    if (product.getStatus()!=null) {
+                        existingProduct.setStatus(product.getStatus());
                     }
 
                     return existingProduct;
@@ -131,7 +131,7 @@ public class ProductsService {
     @Transactional(readOnly = true)
     public Optional<Product> findOne(Long id) {
         log.debug("Request to get Product : {}", id);
-        return productRepository.findOneWithEagerRelationships(id);
+        return productRepository.findById(id);
     }
 } 
 

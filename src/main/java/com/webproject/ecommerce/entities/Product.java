@@ -3,6 +3,7 @@ package com.webproject.ecommerce.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.webproject.ecommerce.enums.Brand;
 
+import com.webproject.ecommerce.enums.OrderItemStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -35,13 +36,12 @@ public class Product {
     private ProductCategory productCategory;
 
     @NotNull
-    @DecimalMin(value = "0")
-    @Column(name = "price", precision = 21, scale = 2, nullable = false)
-    private Double price;
+    @Column(name = "price")
+    private double price;
 
     @NotNull(message="each product should have a brand")
     private Brand brand;
 
     @NotNull(message="each product should have a status")
-    private OrderItemStatus orderItemStatus;
+    private OrderItemStatus status;
 }

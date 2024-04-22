@@ -28,5 +28,5 @@ public interface ProductsRepository extends JpaRepository<Product, Long> {
 
     Optional<List<Product>> findByDescriptionContaining(String keyword);
 
-    Optional<Product> findOneWithEagerRelationships(Long id);
+    Optional<Product> findById(Long id);
 }
