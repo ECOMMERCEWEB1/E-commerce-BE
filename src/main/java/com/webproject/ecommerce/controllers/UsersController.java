@@ -50,7 +50,7 @@ public class UsersController {
             User created_user = usersService.createUser(user);
             return ResponseEntity.
                     created(new URI("/api/users")).
-                    body(userMapper.toDto(user,
+                    body(userMapper.toDto(created_user,
                             "User created successfully !"));
         }
     }

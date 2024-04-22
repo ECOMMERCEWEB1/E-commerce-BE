@@ -2,24 +2,22 @@ package com.webproject.ecommerce.controllers;
 
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.OrderItemDTO;
-import com.webproject.ecommerce.dto.ProductCategoryDTO;
-import com.webproject.ecommerce.dto.ProductDTO;
 import com.webproject.ecommerce.entities.OrderItem;
 import com.webproject.ecommerce.repositories.OrderItemRepository;
 import com.webproject.ecommerce.services.OrderItemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing {@link com.webproject.ecommerce.entities.OrderItem}.
@@ -74,7 +72,7 @@ public class OrderItemController {
     public ResponseEntity<OrderItemDTO> updateOrderItem(
             @PathVariable(value = "id", required = false) final Long id,
             @Valid @RequestBody OrderItem orderItem
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to update OrderItem : {}, {}", id, orderItem);
         if (orderItem.getId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new OrderItemDTO(orderItem, "Invalid ID (Null value) !"));
@@ -108,7 +106,7 @@ public class OrderItemController {
     public ResponseEntity<OrderItemDTO> partialUpdateOrderItem(
             @PathVariable(value = "id", required = false) final Long id,
             @NotNull @RequestBody OrderItem orderItem
-    ) throws URISyntaxException {
+    ){
         log.debug("REST request to partial update OrderItem partially : {}, {}", id, orderItem);
         if (orderItem.getId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new OrderItemDTO(orderItem, "Invalid ID (Null value) !"));
