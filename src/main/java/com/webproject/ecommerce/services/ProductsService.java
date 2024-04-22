@@ -3,100 +3,135 @@ package com.webproject.ecommerce.services;
 import java.util.List;
 import java.util.Optional;
 
-import com.webproject.ecommerce.entities.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.webproject.ecommerce.entities.Product;
 import com.webproject.ecommerce.enums.Brand;
-import com.webproject.ecommerce.enums.Status;
+import com.webproject.ecommerce.enums.OrderItemStatus;
 import com.webproject.ecommerce.repositories.ProductsRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductsService {
-    private final ProductsRepository productsRepository;
+    private final ProductsRepository productRepository;
 
-    public ProductsService(ProductsRepository productsRepository){
-        this.productsRepository = productsRepository;
+    private final Logger log = LoggerFactory.getLogger(ProductsService.class);
+
+    public ProductsService(ProductsRepository productRepository){
+        this.productRepository = productRepository;
     }
 
     public List<Product> getProducts(){
-        return productsRepository.findAll();
+        return productRepository.findAll();
     }
 
     public Optional<Product> getProductByName(String productName){
-        return productsRepository.findByName(productName);
+        return productRepository.findByName(productName);
     }
 
     public Optional<List<Product>> getProductsByBrand(Brand brand){
-        return productsRepository.findByBrand(brand);
+        return productRepository.findByBrand(brand);
     }
 
-    public Optional<List<Product>> getProductsByStatus(Status status){
-        return productsRepository.findByStatus(status);
+    public Optional<List<Product>> getProductsByStatus(OrderItemStatus orderItemStatus){
+        return productRepository.findByStatus(orderItemStatus);
     }
 
     public Optional<List<Product>> getProductsByPriceGreaterThan(double price){
-        return productsRepository.findByPriceGreaterThan(price);
+        return productRepository.findByPriceGreaterThan(price);
     }
 
     public Optional<List<Product>> getProductsByPriceLessThan(double price){
-        return productsRepository.findByPriceLessThan(price);
+        return productRepository.findByPriceLessThan(price);
     }
 
-    public Optional<List<Product>> getProductsByBrandAndStatus(Brand brand, Status status){
-        return productsRepository.findByBrandAndStatus(brand, status);
+    public Optional<List<Product>> getProductsByBrandAndStatus(Brand brand, OrderItemStatus orderItemStatus){
+        return productRepository.findByBrandAndStatus(brand, orderItemStatus);
     }
 
     public Optional<List<Product>> getProductsByDescriptionContaining(String keyword){
-        return productsRepository.findByDescriptionContaining(keyword);
+        return productRepository.findByDescriptionContaining(keyword);
     }
 
-    public void createProduct(Product product)
+    public Product createProduct(Product product)
     {
-        productsRepository.save(product);
+        return productRepository.save(product);
     }
 
-    public Product updateProduct(Long productIdToUpdate, Product product)
-    {
-        Optional<Product> checkIfProductExists = productsRepository.findById(productIdToUpdate);
-
-        if (checkIfProductExists.isPresent()) {
-            Product productToUpdate = checkIfProductExists.get();
-            if(product.getName()!=null)productToUpdate.setName(product.getName());
-            if(product.getDescription()!=null)productToUpdate.setDescription(product.getDescription());
-            if(product.getPrice()!=null)productToUpdate.setPrice(product.getPrice());
-            if(product.getBrand()!=null)productToUpdate.setBrand(product.getBrand());
-            if(product.getStatus()!=null)productToUpdate.setStatus(product.getStatus());
-
-            productsRepository.save(productToUpdate);
-            return productToUpdate;
+    /**
+     * Update a product.
+     *
+     * @param product the entity to save.
+     * @return the persisted entity.
+     */
+    public Product updateProduct(Product product) {
+        log.debug("Request to update Product : {}", product);
+        return productRepository.save(product);
     }
-        else
-        {
-            return new Product();
-        }
 
+    /**
+     * Partially update a product.
+     *
+     * @param product the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Product> partialUpdate(Product product) {
+        log.debug("Request to partially update Product : {}", product);
+
+        return productRepository
+                .findById(product.getId())
+                .map(existingProduct -> {
+                    if (product.getName() != null) {
+                        existingProduct.setName(product.getName());
+                    }
+                    if (product.getDescription() != null) {
+                        existingProduct.setDescription(product.getDescription());
+                    }
+                    if (product.getPrice() != -1) {
+                        existingProduct.setPrice(product.getPrice());
+                    }
+                    if (product.getBrand()!=null) {
+                        existingProduct.setBrand(product.getBrand());
+                    }
+                    if (product.getOrderItemStatus()!=null) {
+                        existingProduct.setOrderItemStatus(product.getOrderItemStatus());
+                    }
+
+                    return existingProduct;
+                })
+                .map(productRepository::save);
     }
+
+
 
     public void deleteProduct(Long id)
     {
-        productsRepository.deleteById(id);
+        productRepository.deleteById(id);
     }
 
     public boolean productNameExists(String Name)
     {
-        return productsRepository.findByName(Name).isPresent();
+        return productRepository.findByName(Name).isPresent();
 
     }
 
     public boolean productIdExists(Long id)
     {
-        return productsRepository.findById(id).isPresent();
+        return productRepository.findById(id).isPresent();
     }
 
-    public Product getProductById(Long id){
-        Optional<Product> product = productsRepository.findById(id);
-        return product.orElse(null);
+    /**
+     * Get one product by id.
+     *
+     * @param id the id of the entity.
+     * @return the entity.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Product> findOne(Long id) {
+        log.debug("Request to get Product : {}", id);
+        return productRepository.findOneWithEagerRelationships(id);
     }
 } 
 

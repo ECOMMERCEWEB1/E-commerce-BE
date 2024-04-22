@@ -1,13 +1,13 @@
 package com.webproject.ecommerce.enums;
 
-public enum Status {
+public enum OrderItemStatus {
     ACTIVE("Available"),
     OUT_OF_STOCK("Out of Stock"),
     BY_COMMAND("By command");
 
     private final String displayName;
 
-    Status(String displayName) {
+    OrderItemStatus(String displayName) {
         this.displayName = displayName;
     }
 

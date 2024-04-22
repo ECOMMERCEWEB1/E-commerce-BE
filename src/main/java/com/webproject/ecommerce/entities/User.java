@@ -1,6 +1,7 @@
 package com.webproject.ecommerce.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.webproject.ecommerce.enums.Role;
 import jakarta.persistence.*;
@@ -15,6 +16,8 @@ import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -49,13 +52,21 @@ public class User implements UserDetails {
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    @ManyToMany
-    @JoinTable(
-         name="user_products",
-       joinColumns=@JoinColumn(name="user_id"),
-         inverseJoinColumns=@JoinColumn(name="product_id")
-    )
-    private List<Product> products;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer" )
+    @JsonIgnoreProperties(value = {"customer"}, allowSetters = true)
+    private Set<ProductOrder> orders;
+
+    // Moetez : ???
+    // IN CART PRODUCTS --> COMMENTED WHILE PRODUCTS AREN'T MADE
+    //@ManyToMany
+    //@JoinTable(
+    //        name="user_products",
+    //        joinColumns=@JoinColumn(name="user_id"),
+    //        inverseJoinColumns=@JoinColumn(name="product_id")
+    //)
+    //private List<Product> products;
+
     @Enumerated(EnumType.STRING)
     private Role role;
     @Override
