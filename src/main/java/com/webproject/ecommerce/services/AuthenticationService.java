@@ -29,7 +29,7 @@ public class AuthenticationService {
         );
         usersRepository.save(user);
         String jwt = jwtService.generateJwt(user);
-        return new AuthenticationResponseDTO(jwt,"User signed up successfully !");
+        return new AuthenticationResponseDTO(jwt,"User signed up successfully !",user.getRole().name().equals("ADMIN"));
     }
     public AuthenticationResponseDTO login(LoginDTO credentials){
         authenticationManager.authenticate(
@@ -37,6 +37,6 @@ public class AuthenticationService {
         );
         User user = usersRepository.findUserByEmail(credentials.getEmail()).orElseThrow(() -> new UsernameNotFoundException("This user does not exist !"));
         String jwt = jwtService.generateJwt(user);
-        return new AuthenticationResponseDTO(jwt,"User logged in successfully !");
+        return new AuthenticationResponseDTO(jwt,"User logged in successfully !", user.getRole().name().equals("ADMIN"));
     }
 }
