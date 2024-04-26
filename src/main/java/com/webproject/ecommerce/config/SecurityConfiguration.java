@@ -26,6 +26,7 @@ public class SecurityConfiguration {
         http.cors(withDefaults()).csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth ->
                 auth.requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers("/api/auth").permitAll()
                         .requestMatchers("/api/users").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/users/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers(HttpMethod.GET,"/api/products").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name(),Role.CLIENT.name())

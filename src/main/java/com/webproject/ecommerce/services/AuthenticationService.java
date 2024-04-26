@@ -11,9 +11,13 @@ import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +44,18 @@ public class AuthenticationService {
         User user = usersRepository.findUserByEmail(credentials.getEmail()).orElseThrow(() -> new UsernameNotFoundException("This user does not exist !"));
         String jwt = jwtService.generateJwt(user);
         return new AuthenticationResponseDTO(jwt,"User logged in successfully !", user.getRole().name().equals("ADMIN"));
+    }
+
+    public User findAuthenticatedUser(String jwtToken) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails){
+
+            if (jwtService.isTokenValid(jwtToken, userDetails)){
+             String username = jwtService.extractUsername(jwtToken);
+             Optional<User> user = usersRepository.findUserByEmail(username);
+                return user.orElse(null);
+        }
+        }
+        return null;
     }
 }
