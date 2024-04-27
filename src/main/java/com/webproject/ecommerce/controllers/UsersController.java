@@ -41,7 +41,7 @@ public class UsersController {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of users in body.
      */
     @GetMapping("/users")
-    public ResponseEntity<Page<User>> getUsers(
+    public ResponseEntity<List<User>> getUsers(
             Pageable pageable,
             @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -53,7 +53,7 @@ public class UsersController {
         else{
             page = usersService.findAll(pageable);
         }
-        return ResponseEntity.ok().body(page);
+        return ResponseEntity.ok().body(page.getContent());
     }
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable(value = "id") Long id) {

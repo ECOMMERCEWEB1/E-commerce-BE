@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.webproject.ecommerce.entities.Product;
@@ -132,6 +134,28 @@ public class ProductsService {
     public Optional<Product> findOne(Long id) {
         log.debug("Request to get Product : {}", id);
         return productRepository.findById(id);
+    }
+
+
+    /**
+     * Get all the products.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public Page<Product> findAll(Pageable pageable) {
+        log.debug("Request to get all Products");
+        return productRepository.findAll(pageable);
+    }
+
+    /**
+     * Get all the products with eager load of many-to-many relationships.
+     *
+     * @return the list of entities.
+     */
+    public Page<Product> findAllWithEagerRelationships(Pageable pageable) {
+        return productRepository.findAllWithEagerRelationships(pageable);
     }
 } 
 
