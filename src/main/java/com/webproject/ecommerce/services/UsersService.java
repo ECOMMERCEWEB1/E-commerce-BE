@@ -1,6 +1,8 @@
 package com.webproject.ecommerce.services;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.repositories.UsersRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,26 @@ public class UsersService {
     public List<User> getUsers(){
         return usersRepository.findAll();
     }
+
+    /**
+     * Get all the products with eager load of many-to-many relationships.
+     *
+     * @return the list of entities.
+     */
+    public Page<User> findAllWithEagerRelationships(Pageable pageable) {
+        return usersRepository.findAllWithEagerRelationship(pageable);
+    }
+
+    /**
+     * Get all the products.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    public Page<User> findAll(Pageable pageable) {
+        return usersRepository.findAll(pageable);
+    }
+
     public User getUserById(Long id)
     {
         Optional<User> user = usersRepository.findUserById(id);
