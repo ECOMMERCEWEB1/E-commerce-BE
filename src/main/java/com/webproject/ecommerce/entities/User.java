@@ -27,14 +27,23 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name="users")
 public class User implements UserDetails {
-    public User(String firstName,String lastName,String email,String password,int age)
+    public User(String firstName,String lastName,String email,String password,Role role, int age)
     {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = Role.CLIENT;
         this.email = email;
         this.password = password;
-
+        this.role = role;
+        this.age = age;
+    }
+    public User(String firstName,String lastName,String email,String password, int age)
+    {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = Role.CLIENT;
+        this.email = email;
+        this.password = password;
         this.age = age;
     }
     @Id
