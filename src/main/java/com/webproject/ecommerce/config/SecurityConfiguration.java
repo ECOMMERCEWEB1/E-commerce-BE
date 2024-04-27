@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -22,9 +23,10 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth ->
+        http.cors(withDefaults()).csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth ->
                 auth.requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers("/api/auth").permitAll()
                         .requestMatchers("/api/users").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/users/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers(HttpMethod.GET,"/api/products").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name(),Role.CLIENT.name())
