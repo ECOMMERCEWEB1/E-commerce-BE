@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -127,13 +129,16 @@ public class ProductOrderController {
     /**
      * {@code GET  /product-orders} : get all the productOrders.
      *
+     * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of productOrders in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<ProductOrder>> getAllProductOrders() {
+    public ResponseEntity<List<ProductOrder>> getAllProductOrders(
+            Pageable pageable
+    ) {
         log.debug("REST request to get a page of ProductOrders");
-        List<ProductOrder> list = productOrderService.findAll();
-        return ResponseEntity.ok().body(list);
+        Page<ProductOrder> page = productOrderService.findAll(pageable);
+        return ResponseEntity.ok().body(page.getContent());
     }
 
     /**

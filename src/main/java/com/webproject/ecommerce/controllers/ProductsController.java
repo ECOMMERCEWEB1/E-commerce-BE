@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,15 +40,24 @@ public class ProductsController {
     /**
      * {@code GET  /products} : get all the products.
      *
+     * @param pageable the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of products in body.
      */
     @GetMapping("/products")
         public ResponseEntity<List<Product>> getProducts(
-            @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+                Pageable pageable,
+            @RequestParam(name = "eagerload", required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a list of Products");
-        return ResponseEntity.ok().body(productsService.getProducts());
+        Page<Product> page;
+        if (eagerload){
+            page = productsService.findAllWithEagerRelationships(pageable);
+        }
+        else {
+            page = productsService.findAll(pageable);
+        }
+        return ResponseEntity.ok().body(page.getContent());
     }
 
     /**
