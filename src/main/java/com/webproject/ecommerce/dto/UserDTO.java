@@ -15,4 +15,5 @@ public class UserDTO {
     private String email;
     private List<ProductOrder> orders;
     private String message;
+    private String role;
 }
