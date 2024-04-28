@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
     UserDTO toDtoAdmin(User user, String message);
     @Mapping(target = "enabled", ignore = true)
     UserDTO toDto(User user, String message);
