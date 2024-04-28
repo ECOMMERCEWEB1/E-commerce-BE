@@ -17,6 +17,7 @@ public class UserDTO {
     private String message;
     private String role;
     private Boolean enabled;
+    private String img;
 
 
     public UserDTO() {

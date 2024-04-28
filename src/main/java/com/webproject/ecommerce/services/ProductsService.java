@@ -157,5 +157,14 @@ public class ProductsService {
     public Page<Product> findAllWithEagerRelationships(Pageable pageable) {
         return productRepository.findAllWithEagerRelationships(pageable);
     }
+
+    /**
+     * Get the number of all products.
+     *
+     * @return the count of Products.
+     */
+    public Long countProducts(){
+        return productRepository.countAll();
+    }
 } 
 

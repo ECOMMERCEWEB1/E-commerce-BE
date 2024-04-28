@@ -103,4 +103,13 @@ public class ProductCategoryService {
         log.debug("Request to delete ProductCategory : {}", id);
         productCategoryRepository.deleteById(id);
     }
+
+    /**
+     * Get the number of all categories.
+     *
+     * @return the count of Product Categories.
+     */
+    public long countProductCategories(){
+        return productCategoryRepository.countAll();
+    }
 }

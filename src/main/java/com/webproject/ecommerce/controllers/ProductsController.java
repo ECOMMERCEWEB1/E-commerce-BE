@@ -73,6 +73,16 @@ public class ProductsController {
         return ResponseEntity.of(product);
     }
 
+    /**
+     * {@code GET  /products/count} : get the number of product.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the count of products, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/products/count")
+    public ResponseEntity<Long> getCount() {
+        log.debug("REST request to get Product count.");
+        return ResponseEntity.ok().body(productsService.countProducts());
+    }
 
     /**
      * {@code POST  /products} : Create a new product.

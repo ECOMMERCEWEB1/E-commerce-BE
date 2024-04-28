@@ -17,4 +17,5 @@ public class ProductDTO {
     private Brand brand;
     private OrderItemStatus status;
     private String message;
+    private String img;
 }

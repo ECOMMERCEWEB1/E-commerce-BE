@@ -149,6 +149,17 @@ public class ProductCategoryController {
     }
 
     /**
+     * {@code GET  /product-categories/count} : get the number of product.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the count of products, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/products-categories/count")
+    public ResponseEntity<Long> getCount() {
+        log.debug("REST request to get Product Category count.");
+        return ResponseEntity.ok().body(productCategoryService.countProductCategories());
+    }
+
+    /**
      * {@code DELETE  /product-categories/:id} : delete the "id" productCategory.
      *
      * @param id the id of the productCategory to delete.

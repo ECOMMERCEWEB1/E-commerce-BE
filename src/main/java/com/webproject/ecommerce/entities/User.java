@@ -63,6 +63,8 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    private String img;
+
     private boolean enabled;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer" )

@@ -15,6 +15,10 @@ import java.util.Optional;
 
 @Repository
 public interface ProductsRepository extends JpaRepository<Product, Long> {
+    @Query("select count(*) from Product p")
+    long countAll();
+
+
 
     List<Product> findAll();
 
