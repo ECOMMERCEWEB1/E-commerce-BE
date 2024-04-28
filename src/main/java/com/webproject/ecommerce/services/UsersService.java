@@ -1,8 +1,10 @@
 package com.webproject.ecommerce.services;
 import com.webproject.ecommerce.entities.User;
+import com.webproject.ecommerce.enums.Role;
 import com.webproject.ecommerce.repositories.UsersRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +52,9 @@ public class UsersService {
         return usersRepository.existsById(id);
     }
     public User createUser(User user){
-         return usersRepository.save(user);
+
+         User db_user = new User(user.getFirstName(),user.getLastName(),user.getEmail(),new BCryptPasswordEncoder().encode(user.getPassword()), user.getRole(), user.getAge(), user.isEnabled());
+         return usersRepository.save(db_user);
     }
     public boolean userIdCheck(User user, Long id){
         if (!id.equals(user.getId())){
@@ -65,16 +69,24 @@ public class UsersService {
                            String lastName,
                            Integer age,
                            String email,
-                           Long id){
+                           Long id,
+                           Role role,
+                           boolean isEnabled){
        User db_user = usersRepository.findUserById(id).get();
        if(email!=null)db_user.setEmail(email);
        if(firstName!=null)db_user.setFirstName(firstName);
        if(lastName!=null)db_user.setLastName(lastName);
        if(age!=null)db_user.setAge(age);
+       if(role!= null)db_user.setEnabled(isEnabled);
        usersRepository.save(db_user);
        return db_user;
     }
     public void deleteUser(Long id){
         usersRepository.deleteById(id);
+    }
+
+    public Long countUsers() {
+        Long count = this.usersRepository.count();
+        return count ;
     }
 }

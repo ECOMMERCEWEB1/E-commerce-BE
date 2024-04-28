@@ -1,5 +1,6 @@
 package com.webproject.ecommerce.controllers;
 
+import com.webproject.ecommerce.dto.CountDTO;
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.UserDTO;
 import com.webproject.ecommerce.mappers.UserMapper;
@@ -69,33 +70,37 @@ public class UsersController {
         if (usersService.userEmailExists(user.getEmail()))
             return ResponseEntity.
                     internalServerError().
-                    body(userMapper.toDto(user,
+                    body(userMapper.toDtoAdmin(user,
                             "Email already exists !"));
         else {
             User created_user = usersService.createUser(user);
             return ResponseEntity.
                     created(new URI("/api/users")).
-                    body(userMapper.toDto(created_user,
+                    body(userMapper.toDtoAdmin(created_user,
                             "User created successfully !"));
         }
     }
-
+    @GetMapping("/users/count")
+    public ResponseEntity<CountDTO> countUsers() {
+        Long count = this.usersService.countUsers();
+        return ResponseEntity.ok(new CountDTO(count));
+    }
     @PutMapping("/users/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User user) {
 
         if (!usersService.userIdExists(id))
             return ResponseEntity.
                     badRequest().
-                    body(userMapper.toDto(user,"ID does not exist !"));
+                    body(userMapper.toDtoAdmin(user,"ID does not exist !"));
 
         else if (!usersService.userIdCheck(user, id))
             return ResponseEntity.
                     status(HttpStatus.NOT_FOUND).
-                    body(userMapper.toDto(user,
+                    body(userMapper.toDtoAdmin(user,
                             "IDs must match !"));
         else {
-            User updated_user = usersService.updateUser(user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail(), id);
-            return ResponseEntity.ok().body(userMapper.toDto(updated_user, "User updated successfully !"));
+            User updated_user = usersService.updateUser(user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail(), id,user.getRole(),user.isEnabled());
+            return ResponseEntity.ok().body(userMapper.toDtoAdmin(updated_user, "User updated successfully !"));
         }
     }
 
