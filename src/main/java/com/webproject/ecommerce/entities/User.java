@@ -63,6 +63,8 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    private boolean enabled;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer" )
     @JsonIgnoreProperties(value = {"customer"}, allowSetters = true)
     private Set<ProductOrder> orders;
@@ -73,7 +75,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
-    private boolean enabled;
+
     @Override
     public String getUsername() {
         return email;

@@ -16,5 +16,9 @@ public class UserDTO {
     private List<ProductOrder> orders;
     private String message;
     private String role;
-    private boolean enabled;
+    private Boolean enabled;
+
+
+    public UserDTO() {
+    }
 }
