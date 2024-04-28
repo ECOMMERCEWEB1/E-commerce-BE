@@ -27,13 +27,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name="users")
 public class User implements UserDetails {
-    public User(String firstName,String lastName,String email,String password,Role role, int age)
+    public User(String firstName,String lastName,String email,String password,Role role, int age, boolean enabled)
     {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = Role.CLIENT;
         this.email = email;
         this.password = password;
+        this.enabled = enabled;
         this.role = role;
         this.age = age;
     }
@@ -53,7 +53,7 @@ public class User implements UserDetails {
     @NotBlank(message="First name is mandatory")
     @Length(min=2,message = "First Name must contain atleast 2 characters")
     private String firstName;
-    @Length(min=2,message = "First Name must contain atleast 2 characters")
+    @Length(min=2,message = "Last Name must contain atleast 2 characters")
     @NotBlank(message="Last name is mandatory")
     private String lastName;
     @Min(value=13)
@@ -73,7 +73,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
-
+    private boolean enabled;
     @Override
     public String getUsername() {
         return email;
@@ -96,6 +96,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

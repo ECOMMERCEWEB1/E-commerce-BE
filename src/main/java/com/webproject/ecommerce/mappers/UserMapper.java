@@ -4,11 +4,13 @@ import com.webproject.ecommerce.dto.UserDTO;
 import com.webproject.ecommerce.entities.User;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    UserDTO toDto(User user, @Context String message);
-
+    UserDTO toDtoAdmin(User user, String message);
+    @Mapping(target = "enabled", ignore = true)
+    UserDTO toDto(User user, String message);
     //User toEntity(UserDTO userDTO);
 }
