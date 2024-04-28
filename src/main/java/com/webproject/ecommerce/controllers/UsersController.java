@@ -1,11 +1,14 @@
 package com.webproject.ecommerce.controllers;
 
+import com.webproject.ecommerce.config.JwtService;
 import com.webproject.ecommerce.dto.CountDTO;
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.UserDTO;
 import com.webproject.ecommerce.mappers.UserMapper;
 import com.webproject.ecommerce.entities.User;
+import com.webproject.ecommerce.services.AuthenticationService;
 import com.webproject.ecommerce.services.UsersService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +32,15 @@ public class UsersController {
 
     private final Logger log = LoggerFactory.getLogger(UsersController.class);
 
-    public UsersController(UsersService usersService, UserMapper userMapper) {
+    private final JwtService jwtService;
+
+    private final AuthenticationService authenticationService;
+
+    public UsersController(UsersService usersService, UserMapper userMapper, JwtService jwtService, AuthenticationService authenticationService) {
         this.userMapper = userMapper;
         this.usersService = usersService;
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
     }
 
     /**
@@ -105,7 +114,11 @@ public class UsersController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable(value = "id") Long id,
+                                        HttpServletRequest request) {
+        User requestor = authenticationService.findAuthenticatedUser(jwtService.getJwtFromCookies(request));
+        if (requestor.getId().equals(id))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageDTO("User can not delete themselves!"));
         if (usersService.userIdExists(id))
             usersService.deleteUser(id);
         else
