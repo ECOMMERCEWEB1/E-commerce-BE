@@ -31,7 +31,8 @@ public class AuthenticationService {
                 userInformation.getLastName(),
                 userInformation.getEmail(),
                 new BCryptPasswordEncoder().encode(userInformation.getPassword()),
-                userInformation.getAge()
+                userInformation.getAge(),
+                true
         );
         usersRepository.save(user);
         String jwt = jwtService.generateJwt(user);

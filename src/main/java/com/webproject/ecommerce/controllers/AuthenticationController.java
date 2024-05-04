@@ -33,7 +33,7 @@ public class AuthenticationController {
 
     @CrossOrigin(value ="http://localhost:4200",allowCredentials = "true")
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDTO> register(
+    public ResponseEntity<AuthenticationResponseDTO> login(
             HttpServletResponse response,
             @RequestBody LoginDTO userCredentials
     ) {
