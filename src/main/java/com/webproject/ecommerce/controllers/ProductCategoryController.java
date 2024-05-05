@@ -4,6 +4,7 @@ package com.webproject.ecommerce.controllers;
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.ProductCategoryDTO;
 import com.webproject.ecommerce.entities.ProductCategory;
+import com.webproject.ecommerce.mappers.ProductCategoryMapper;
 import com.webproject.ecommerce.repositories.ProductCategoryRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ import com.webproject.ecommerce.services.ProductCategoryService;
  * REST controller for managing {@link com.webproject.ecommerce.entities.ProductCategory}.
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials= "true")
 @RequestMapping("/api/product-categories")
 public class ProductCategoryController {
 
@@ -32,9 +34,11 @@ public class ProductCategoryController {
 
     private final ProductCategoryRepository productCategoryRepository;
 
-    public ProductCategoryController(ProductCategoryService productCategoryService, ProductCategoryRepository productCategoryRepository) {
+    private final ProductCategoryMapper productCategoryMapper;
+    public ProductCategoryController(ProductCategoryService productCategoryService, ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper) {
         this.productCategoryService = productCategoryService;
         this.productCategoryRepository = productCategoryRepository;
+        this.productCategoryMapper = productCategoryMapper;
     }
 
     /**
@@ -49,12 +53,12 @@ public class ProductCategoryController {
             throws URISyntaxException {
         log.debug("REST request to save ProductCategory : {}", productCategory);
         if (productCategory.getId() != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductCategoryDTO(productCategory, "Product Category already has an Id !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productCategoryMapper.toDto(productCategory, "Product Category already has an Id !"));
         }
         ProductCategory result = productCategoryService.save(productCategory);
         return ResponseEntity
                 .created(new URI("/api/product-categories/" + result.getId()))
-                .body(new ProductCategoryDTO(productCategory, "product category created successfully !"));
+                .body( productCategoryMapper.toDto(productCategory, "product category created successfully !"));
 
     }
 
@@ -74,16 +78,16 @@ public class ProductCategoryController {
     ){
         log.debug("REST request to update ProductCategory : {}, {}", id, productCategory);
         if(productCategory.getId() == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductCategoryDTO(productCategory, "Invalid ID (Null value) !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productCategoryMapper.toDto(productCategory, "Invalid ID (Null value) !"));
         if (!productCategoryRepository.existsById(id))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductCategoryDTO(productCategory, "ID does not exist !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productCategoryMapper.toDto(productCategory, "ID does not exist !"));
         if (!Objects.equals(id, productCategory.getId()))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductCategoryDTO(productCategory, "Invalid ID, query parameter ID:"+id+" != product category's Id:"+productCategory.getId()+" !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productCategoryMapper.toDto(productCategory, "Invalid ID, query parameter ID:"+id+" != product category's Id:"+productCategory.getId()+" !"));
 
         ProductCategory result = productCategoryService.update(productCategory);
         return ResponseEntity
                 .ok()
-                .body(new ProductCategoryDTO(result, "Product Category updated successfully !"));
+                .body(productCategoryMapper.toDto(result, "Product Category updated successfully !"));
 
     }
 
@@ -104,24 +108,24 @@ public class ProductCategoryController {
     ){
         log.debug("REST request to partial update ProductCategory partially : {}, {}", id, productCategory);
         if (productCategory.getId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductCategoryDTO(productCategory, "Invalid ID (Null value) !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productCategoryMapper.toDto(productCategory, "Invalid ID (Null value) !"));
         }
         if (!Objects.equals(id, productCategory.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductCategoryDTO(productCategory, "Invalid ID, query parameter ID:"+id+" != product category's Id:"+productCategory.getId()+" !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productCategoryMapper.toDto(productCategory, "Invalid ID, query parameter ID:"+id+" != product category's Id:"+productCategory.getId()+" !"));
         }
 
         if (!productCategoryRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductCategoryDTO(productCategory, "ID does not exist !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productCategoryMapper.toDto(productCategory, "ID does not exist !"));
         }
 
         Optional<ProductCategory> result = productCategoryService.partialUpdate(productCategory);
 
         return result.map(category -> ResponseEntity
                         .ok()
-                        .body(new ProductCategoryDTO(category, "Product Category updated successfully !")))
+                        .body(productCategoryMapper.toDto(category, "Product Category updated successfully !")))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new ProductCategoryDTO(productCategory, "Could not update the product category. Internal server error!")));
+                        .body(productCategoryMapper.toDto(productCategory, "Could not update the product category. Internal server error!")));
     }
 
     /**
@@ -153,7 +157,7 @@ public class ProductCategoryController {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the count of products, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/products-categories/count")
+    @GetMapping("/count")
     public ResponseEntity<Long> getCount() {
         log.debug("REST request to get Product Category count.");
         return ResponseEntity.ok().body(productCategoryService.countProductCategories());

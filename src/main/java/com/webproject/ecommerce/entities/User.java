@@ -37,7 +37,7 @@ public class User implements UserDetails {
         this.role = role;
         this.age = age;
     }
-    public User(String firstName,String lastName,String email,String password, int age)
+    public User(String firstName,String lastName,String email,String password, int age, boolean enabled)
     {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,6 +45,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.age = age;
+        this.enabled = enabled;
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

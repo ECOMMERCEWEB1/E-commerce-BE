@@ -31,7 +31,8 @@ public class AuthenticationService {
                 userInformation.getLastName(),
                 userInformation.getEmail(),
                 new BCryptPasswordEncoder().encode(userInformation.getPassword()),
-                userInformation.getAge()
+                userInformation.getAge(),
+                true
         );
         usersRepository.save(user);
         String jwt = jwtService.generateJwt(user);
@@ -41,6 +42,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(credentials.getEmail(),credentials.getPassword())
         );
+        System.out.println("AUTHENTICATED IN SERVER");
         User user = usersRepository.findUserByEmail(credentials.getEmail()).orElseThrow(() -> new UsernameNotFoundException("This user does not exist !"));
         String jwt = jwtService.generateJwt(user);
         return new AuthenticationResponseDTO(jwt,"User logged in successfully !", user.getRole().name().equals("ADMIN"));

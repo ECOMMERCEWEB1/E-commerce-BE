@@ -10,6 +10,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ProductCategoryDTO {
-    private ProductCategory productCategory;
+    private Long id;
+    private String name;
+    private String description;
     private String message;
 }
