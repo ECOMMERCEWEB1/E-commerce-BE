@@ -45,5 +45,8 @@ public class Product {
     @NotNull(message="each product should have a status")
     private OrderItemStatus status;
 
-    private String img;
+    private String img1;
+    private String img2;
+    private String img3;
+    private String img4;
 }

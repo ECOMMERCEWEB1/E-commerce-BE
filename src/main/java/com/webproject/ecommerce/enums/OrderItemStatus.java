@@ -1,7 +1,7 @@
 package com.webproject.ecommerce.enums;
 
 public enum OrderItemStatus {
-    ACTIVE("Available"),
+    AVAILABLE("Available"),
     OUT_OF_STOCK("Out of Stock"),
     BY_COMMAND("By command");
 
