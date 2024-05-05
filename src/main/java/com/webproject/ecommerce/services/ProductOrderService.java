@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.webproject.ecommerce.entities.ProductOrder;
+import com.webproject.ecommerce.enums.OrderStatus;
 import com.webproject.ecommerce.repositories.ProductOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class ProductOrderService {
                     if (productOrder.getPlacedDate() != null) {
                         existingProductOrder.setPlacedDate(productOrder.getPlacedDate());
                     }
-                    if (productOrder.getStatus() != null) {
+                    if (productOrder.getStatus() == OrderStatus.CANCELLED) {
                         existingProductOrder.setStatus(productOrder.getStatus());
                     }
                     if (productOrder.getCode() != null) {
