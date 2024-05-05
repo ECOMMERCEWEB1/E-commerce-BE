@@ -37,7 +37,7 @@ public class ProductOrder implements Serializable {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JsonIgnoreProperties(value={"order"})
     private Invoice invoice;
 
@@ -46,8 +46,8 @@ public class ProductOrder implements Serializable {
     @JsonIgnoreProperties(value = {"orders"}, allowSetters= true)
     private User customer;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
-    @JsonIgnoreProperties(value = { "product", "order" }, allowSetters = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.PERSIST)
+    @JsonIgnoreProperties(value = { "order" }, allowSetters = true)
     private Set<OrderItem> orderItems = new HashSet<>();
 
     public Long getId() {

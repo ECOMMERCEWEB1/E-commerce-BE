@@ -1,10 +1,13 @@
 package com.webproject.ecommerce.services;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.Optional;
 
+import com.webproject.ecommerce.entities.Invoice;
 import com.webproject.ecommerce.entities.ProductOrder;
+import com.webproject.ecommerce.enums.InvoiceStatus;
 import com.webproject.ecommerce.enums.OrderStatus;
+import com.webproject.ecommerce.repositories.InvoiceRepository;
 import com.webproject.ecommerce.repositories.ProductOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +27,12 @@ public class ProductOrderService {
 
     private final ProductOrderRepository productOrderRepository;
 
-    public ProductOrderService(ProductOrderRepository productOrderRepository) {
+    private final InvoiceRepository invoiceRepository;
+
+    public ProductOrderService(ProductOrderRepository productOrderRepository,
+    InvoiceRepository invoiceRepository) {
         this.productOrderRepository = productOrderRepository;
+        this.invoiceRepository = invoiceRepository;
     }
 
     /**
@@ -56,7 +63,7 @@ public class ProductOrderService {
      * @param productOrder the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<ProductOrder> partialUpdate(ProductOrder productOrder) {
+    public Optional<ProductOrder> partialOrderUpdate(ProductOrder productOrder) throws RuntimeException {
         log.debug("Request to partially update ProductOrder : {}", productOrder);
 
         return productOrderRepository
@@ -66,22 +73,48 @@ public class ProductOrderService {
                         existingProductOrder.setPlacedDate(productOrder.getPlacedDate());
                     }
                     if (productOrder.getStatus() == OrderStatus.CANCELLED) {
+                        if(existingProductOrder.getInvoice().getStatus().equals(InvoiceStatus.PAID)) {
+                            throw new RuntimeException("Order already paid for, can not cancel!");
+                        }
                         existingProductOrder.setStatus(productOrder.getStatus());
+                        existingProductOrder.getInvoice().status(InvoiceStatus.CANCELLED);
                     }
-                    if (productOrder.getCode() != null) {
-                        existingProductOrder.setCode(productOrder.getCode());
-                    }
-                    if (productOrder.getInvoice() != null) {
-                        existingProductOrder.setInvoice(productOrder.getInvoice());
-                    }
-                    if (productOrder.getCustomer() != null) {
-                        existingProductOrder.setCustomer(productOrder.getCustomer());
-                    }
-
                     return existingProductOrder;
                 })
                 .map(productOrderRepository::save);
     }
+
+    /**
+     * Partially update an invoice.
+     *
+     * @param invoice the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Invoice> partialInvoiceUpdate(Invoice invoice) throws RuntimeException {
+        log.debug("Request to partially update Invoice : {}", invoice);
+
+        return invoiceRepository
+                .findById(invoice.getId())
+                .map(existingInvoice -> {
+                    if (existingInvoice.getStatus().equals(InvoiceStatus.PAID))
+                        throw new RuntimeException("Order already paid for, can not update!");
+                    else {
+                        if (invoice.getStatus() != null) {
+                            existingInvoice.setStatus(invoice.getStatus());
+                            if (invoice.getStatus().equals(InvoiceStatus.PAID))
+                                existingInvoice.setPaymentDate(Instant.now());
+                        }
+                        if (invoice.getDetails() != null)
+                            existingInvoice.setDetails(invoice.getDetails());
+                        if (invoice.getPaymentMethod() != null)
+                            existingInvoice.setPaymentMethod(invoice.getPaymentMethod());
+                    }
+                    return existingInvoice;
+                })
+                .map(invoiceRepository::save);
+
+    }
+
 
     /**
      * Get all the productOrders.

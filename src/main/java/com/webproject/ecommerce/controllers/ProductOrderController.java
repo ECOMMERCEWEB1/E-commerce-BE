@@ -103,20 +103,25 @@ public class ProductOrderController {
     public ResponseEntity<ProductOrderDTO> partialUpdateProductOrder(
             @PathVariable(value = "id", required = false) final Long id,
             @NotNull @RequestBody ProductOrder productOrder
-    ){
+    ) {
         log.debug("REST request to partial update ProductOrder partially : {}, {}", id, productOrder);
         if (productOrder.getId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID (Null value) !"));
         }
         if (!Objects.equals(id, productOrder.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID, query parameter ID:"+id+" != product order's Id:"+productOrder.getId()+" !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID, query parameter ID:" + id + " != product order's Id:" + productOrder.getId() + " !"));
         }
 
         if (!productOrderRepository.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductOrderDTO(productOrder, "ID does not exist !"));
         }
 
-        Optional<ProductOrder> result = productOrderService.partialUpdate(productOrder);
+        Optional<ProductOrder> result;
+        try {
+            result = productOrderService.partialOrderUpdate(productOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, e.getMessage()));
+        }
 
         return result.map(order -> ResponseEntity
                         .ok()
@@ -125,6 +130,8 @@ public class ProductOrderController {
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(new ProductOrderDTO(productOrder, "Could not update the product order. Internal server error!")));
     }
+
+
 
     /**
      * {@code GET  /product-orders} : get all the productOrders.
