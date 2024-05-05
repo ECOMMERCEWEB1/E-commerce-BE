@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials= "true")
 @RequestMapping("/api")
 public class ProductsController {
     private final ProductsService productsService;
@@ -47,7 +48,7 @@ public class ProductsController {
     @GetMapping("/products")
         public ResponseEntity<List<Product>> getProducts(
                 Pageable pageable,
-            @RequestParam(name = "eagerload", required = false, defaultValue = "false") boolean eagerload
+            @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
         log.debug("REST request to get a list of Products");
         Page<Product> page;

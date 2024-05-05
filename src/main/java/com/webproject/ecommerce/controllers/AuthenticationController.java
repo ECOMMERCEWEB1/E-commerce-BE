@@ -12,6 +12,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,7 @@ public class AuthenticationController {
     private final UserMapper userMapper;
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
+    private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
     @CrossOrigin(value = "http://localhost:4200",allowCredentials = "true")
     @PostMapping("/signup")
     public ResponseEntity<MessageDTO> register(
@@ -38,6 +41,7 @@ public class AuthenticationController {
             @RequestBody LoginDTO userCredentials
     ) {
         AuthenticationResponseDTO auth = authenticationService.login(userCredentials);
+        log.debug("REST request to save ProductCategory : {}", "ITS HAPPENING");
         Cookie jwtCookie = new Cookie("jwt", auth.getToken());
         jwtCookie.setMaxAge(60 * 60 * 24);
         jwtCookie.setHttpOnly(true);
