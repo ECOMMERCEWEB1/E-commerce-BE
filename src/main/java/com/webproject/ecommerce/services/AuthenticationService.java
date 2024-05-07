@@ -8,6 +8,7 @@ import com.webproject.ecommerce.dto.SignUpDTO;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.repositories.UsersRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,5 +60,14 @@ public class AuthenticationService {
         }
         }
         return null;
+    }
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", null);
+        // Set its maximum age to 0, effectively expiring it
+        cookie.setMaxAge(0);
+        // Set the cookie's path (if it's different from the default path)
+        // cookie.setPath("/your/path");
+        // Add the cookie to the response
+        response.addCookie(cookie);
     }
 }

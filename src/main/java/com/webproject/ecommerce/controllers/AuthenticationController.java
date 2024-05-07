@@ -61,4 +61,10 @@ public class AuthenticationController {
         return ResponseEntity.status(200).body(userMapper.toDto(user,"User loaded successfully"));
 
     }
+    @CrossOrigin(value="http://localhost:4200",allowCredentials = "true")
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        authenticationService.logout(response);
+        return ResponseEntity.ok(new MessageDTO("User logged out successfully !"));
+    }
 }

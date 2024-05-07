@@ -9,6 +9,7 @@ import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.services.AuthenticationService;
 import com.webproject.ecommerce.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,10 +91,11 @@ public class UsersController {
         }
     }
     @GetMapping("/users/count")
-    public ResponseEntity<CountDTO> countUsers() {
+    public ResponseEntity<Long> countUsers() {
         Long count = this.usersService.countUsers();
-        return ResponseEntity.ok(new CountDTO(count));
+        return ResponseEntity.ok(count);
     }
+
     @PutMapping("/users/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User user) {
 

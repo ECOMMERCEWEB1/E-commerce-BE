@@ -149,5 +149,13 @@ public class ProductOrderService {
         log.debug("Request to delete ProductOrder : {}", id);
         productOrderRepository.deleteById(id);
     }
+    /**
+     * Count all the product Orders.
+     *
+     *  @return the number of product orders.
+     */
+    public Long count(){
+        return productOrderRepository.count();
+    }
 }
 
