@@ -2,6 +2,8 @@ package com.webproject.ecommerce.services;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.enums.Role;
 import com.webproject.ecommerce.repositories.UsersRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -86,7 +88,6 @@ public class UsersService {
     }
 
     public Long countUsers() {
-        Long count = this.usersRepository.count();
-        return count ;
+        return this.usersRepository.count();
     }
 }

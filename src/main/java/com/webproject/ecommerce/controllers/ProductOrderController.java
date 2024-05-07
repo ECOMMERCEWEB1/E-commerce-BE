@@ -177,5 +177,20 @@ public class ProductOrderController {
                 .status(HttpStatus.NO_CONTENT)
                 .body(new MessageDTO("Product Order Deleted Successfully!"));
     }
+    /**
+     * {@code GET  /product-orders} : get the count of all the productOrders.
+     * no params
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count of all the products.
+     */
+    @CrossOrigin(value = "http://localhost:4200",allowCredentials = "true")
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAllProductOrders(
+    ) {
+        log.debug("REST request to get the number of ProductOrders");
+        long count = productOrderService.count();
+        return ResponseEntity.ok().body(count);
+    }
+
+
 }
 
