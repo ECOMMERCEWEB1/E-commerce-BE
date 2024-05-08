@@ -7,6 +7,7 @@ import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.SignUpDTO;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.mappers.UserMapper;
+import com.webproject.ecommerce.repositories.UsersRepository;
 import com.webproject.ecommerce.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +27,16 @@ public class AuthenticationController {
     private final UserMapper userMapper;
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
+
+    private final UsersRepository usersRepository;
     private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
     @CrossOrigin(value = "http://localhost:4200",allowCredentials = "true")
     @PostMapping("/signup")
     public ResponseEntity<MessageDTO> register(
             @RequestBody SignUpDTO userInformation
     ) {
+        if (usersRepository.existsByEmail(userInformation.getEmail()))
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO("Email Already in Use!"));
         return ResponseEntity.ok(authenticationService.register(userInformation));
     }
 
@@ -40,14 +46,18 @@ public class AuthenticationController {
             HttpServletResponse response,
             @RequestBody LoginDTO userCredentials
     ) {
-        AuthenticationResponseDTO auth = authenticationService.login(userCredentials);
-        log.debug("REST request to save ProductCategory : {}", "ITS HAPPENING");
-        Cookie jwtCookie = new Cookie("jwt", auth.getToken());
-        jwtCookie.setMaxAge(60 * 60 * 24);
-        jwtCookie.setHttpOnly(true);
-        response.addCookie(jwtCookie);
+        try{
+            AuthenticationResponseDTO auth = authenticationService.login(userCredentials);
+            log.debug("REST request to authenticate user with email : {}", userCredentials.getEmail());
+            Cookie jwtCookie = new Cookie("jwt", auth.getToken());
+            jwtCookie.setMaxAge(60 * 60 * 24);
+            jwtCookie.setHttpOnly(true);
+            response.addCookie(jwtCookie);
+            return ResponseEntity.ok(auth);
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().body(new AuthenticationResponseDTO(null,e.getMessage(),null));
+        }
 
-        return ResponseEntity.ok(auth);
     }
 
     @CrossOrigin(value="http://localhost:4200",allowCredentials = "true")

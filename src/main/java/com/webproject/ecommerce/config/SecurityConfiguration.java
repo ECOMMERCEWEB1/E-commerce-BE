@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/users/count").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/users").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/users/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,"/api/products").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name(),Role.CLIENT.name())
+                        .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/products").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/products/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .anyRequest()
