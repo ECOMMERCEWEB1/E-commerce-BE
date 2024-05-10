@@ -3,6 +3,7 @@ package com.webproject.ecommerce.controllers;
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.ProductOrder;
+import com.webproject.ecommerce.mappers.ProductOrderMapper;
 import com.webproject.ecommerce.repositories.ProductOrderRepository;
 import com.webproject.ecommerce.services.ProductOrderService;
 import jakarta.validation.Valid;
@@ -33,9 +34,12 @@ public class ProductOrderController {
 
     private final ProductOrderRepository productOrderRepository;
 
-    public ProductOrderController(ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
+    private final ProductOrderMapper productOrderMapper;
+
+    public ProductOrderController(ProductOrderMapper productOrderMapper,ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
         this.productOrderService = productOrderService;
         this.productOrderRepository = productOrderRepository;
+        this.productOrderMapper = productOrderMapper;
     }
 
     /**
@@ -49,12 +53,12 @@ public class ProductOrderController {
     public ResponseEntity<ProductOrderDTO> createProductOrder(@Valid @RequestBody ProductOrder productOrder) throws URISyntaxException {
         log.debug("REST request to save ProductOrder : {}", productOrder);
         if (productOrder.getId() != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Product Order already has an Id !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrderMapper.toDto(productOrder, "Product Order already has an Id !"));
         }
         ProductOrder result = productOrderService.save(productOrder);
         return ResponseEntity
                 .created(new URI("/api/product-orders/" + result.getId()))
-                .body(new ProductOrderDTO(productOrder, "product order created successfully !"));
+                .body(productOrderMapper.toDto(productOrder, "product order created successfully !"));
 
     }
 
@@ -74,19 +78,19 @@ public class ProductOrderController {
     ){
         log.debug("REST request to update ProductOrder : {}, {}", id, productOrder);
         if (productOrder.getId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID (Null value) !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrderMapper.toDto(productOrder, "Invalid ID (Null value) !"));
         }
         if (!Objects.equals(id, productOrder.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID, query parameter ID:"+id+" != product order's Id:"+productOrder.getId()+" !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrderMapper.toDto(productOrder, "Invalid ID, query parameter ID:"+id+" != product order's Id:"+productOrder.getId()+" !"));
         }
         if (!productOrderRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductOrderDTO(productOrder, "ID does not exist !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productOrderMapper.toDto(productOrder, "ID does not exist !"));
         }
 
         ProductOrder result = productOrderService.update(productOrder);
         return ResponseEntity
                 .ok()
-                .body(new ProductOrderDTO(result, "Product Order created successfully!"));
+                .body(productOrderMapper.toDto(result, "Product Order created successfully!"));
     }
 
     /**
@@ -106,29 +110,29 @@ public class ProductOrderController {
     ) {
         log.debug("REST request to partial update ProductOrder partially : {}, {}", id, productOrder);
         if (productOrder.getId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID (Null value) !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrderMapper.toDto(productOrder, "Invalid ID (Null value) !"));
         }
         if (!Objects.equals(id, productOrder.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Invalid ID, query parameter ID:" + id + " != product order's Id:" + productOrder.getId() + " !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrderMapper.toDto(productOrder, "Invalid ID, query parameter ID:" + id + " != product order's Id:" + productOrder.getId() + " !"));
         }
 
         if (!productOrderRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductOrderDTO(productOrder, "ID does not exist !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productOrderMapper.toDto(productOrder, "ID does not exist !"));
         }
 
         Optional<ProductOrder> result;
         try {
             result = productOrderService.partialOrderUpdate(productOrder);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrderMapper.toDto(productOrder, e.getMessage()));
         }
 
         return result.map(order -> ResponseEntity
                         .ok()
-                        .body(new ProductOrderDTO(order, "Product Order updated successfully !")))
+                        .body(productOrderMapper.toDto(order, "Product Order updated successfully !")))
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new ProductOrderDTO(productOrder, "Could not update the product order. Internal server error!")));
+                        .body(productOrderMapper.toDto(productOrder, "Could not update the product order. Internal server error!")));
     }
 
 

@@ -15,7 +15,7 @@ import java.util.Set;
 public class ProductOrderDTO {
     private Set<OrderItem> orderItems;
     private String message;
-    private Long cutomer_id;
+    private Long customer_id;
     private String code;
     private OrderStatus status;
     private Instant placedDate;
