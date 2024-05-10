@@ -46,7 +46,7 @@ public class ProductOrderController {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<ProductOrderDTO> createProductOrder(@Valid @RequestBody ProductOrder productOrder) throws URISyntaxException {
+    public ResponseEntity<ProductOrderDTO> createProductOrder(@Valid @RequestBody ProductOrderDTO productOrder) throws URISyntaxException {
         log.debug("REST request to save ProductOrder : {}", productOrder);
         if (productOrder.getId() != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProductOrderDTO(productOrder, "Product Order already has an Id !"));
@@ -57,6 +57,7 @@ public class ProductOrderController {
                 .body(new ProductOrderDTO(productOrder, "product order created successfully !"));
 
     }
+
 
     /**
      * {@code PUT  /product-orders/:id} : Updates an existing productOrder.

@@ -13,12 +13,13 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 public class ProductOrderDTO {
+    private Long id;
     private Set<OrderItem> orderItems;
     private String message;
-    private Long cutomer_id;
+    private Long customerId;
     private String code;
     private OrderStatus status;
     private Instant placedDate;
-    private Long invoice_id;
+    private Long invoiceId;
 
 }
