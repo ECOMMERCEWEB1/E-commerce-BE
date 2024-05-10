@@ -33,9 +33,10 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/users/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/products").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
-                        .requestMatchers("/api/products/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
+                        .requestMatchers("/api/products/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name(),Role.CLIENT.name())
                         .requestMatchers("/api/product-categories/**").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/product-order/**").hasAnyAuthority(Role.SUPER_ADMIN.name(),Role.ADMIN.name())
+                        .requestMatchers("/api/invoices/**").permitAll()
                         .anyRequest()
                         .authenticated()
 
