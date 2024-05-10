@@ -18,12 +18,12 @@ public interface ProductOrderMapper {
     ProductOrder toEntity(ProductOrderDTO productOrderDTO);
 
     @Named("mapToUser")
-    default User mapToUser(Long userId) {
-        if (userId == null) {
+    default User mapToUser(Long customerId) {
+        if (customerId == null) {
             return null;
         }
         User user = new User();
-        user.setId(userId);
+        user.setId(customerId);
         return user;
     }
 

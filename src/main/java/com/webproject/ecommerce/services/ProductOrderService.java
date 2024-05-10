@@ -2,7 +2,9 @@ package com.webproject.ecommerce.services;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Random;
 
+import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.Invoice;
 import com.webproject.ecommerce.entities.ProductOrder;
 import com.webproject.ecommerce.enums.InvoiceStatus;
@@ -43,7 +45,22 @@ public class ProductOrderService {
      */
     public ProductOrder save(ProductOrder productOrder) {
         log.debug("Request to save ProductOrder : {}", productOrder);
-        return productOrderRepository.save(productOrder);
+        return productOrderRepository.save(setProductOrderDetails(productOrder));
+    }
+    private String generateCode() {
+        final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuilder code = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            code.append(CHARACTERS.charAt(index));
+        }
+        return code.toString();
+    }
+    private ProductOrder setProductOrderDetails(ProductOrder po){
+        po.setCode(generateCode());
+        po.setPlacedDate(Instant.now());
+        return po;
     }
 
     /**
