@@ -3,9 +3,12 @@ package com.webproject.ecommerce.controllers;
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.ProductOrder;
+import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.mappers.ProductOrderMapper;
 import com.webproject.ecommerce.repositories.ProductOrderRepository;
+import com.webproject.ecommerce.repositories.UsersRepository;
 import com.webproject.ecommerce.services.ProductOrderService;
+import com.webproject.ecommerce.services.UsersService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -36,10 +39,13 @@ public class ProductOrderController {
 
     private final ProductOrderMapper productOrderMapper;
 
-    public ProductOrderController(ProductOrderMapper productOrderMapper,ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
+    private final UsersService usersRepository;
+
+    public ProductOrderController(UsersService usersRepository,ProductOrderMapper productOrderMapper,ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
         this.productOrderService = productOrderService;
         this.productOrderRepository = productOrderRepository;
         this.productOrderMapper = productOrderMapper;
+        this.usersRepository = usersRepository;
     }
 
     /**
@@ -56,7 +62,15 @@ public class ProductOrderController {
             productOrder.setMessage("Product Order already has an Id !");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrder);
         }
-        ProductOrder result = productOrderService.save(productOrderMapper.toEntity(productOrder));
+        ProductOrder mappedProductOrder = productOrderMapper.toEntity(productOrder);
+        User user = this.usersRepository.getUserById(mappedProductOrder.getCustomer().getId());
+        if (user==null){
+            productOrder.setMessage("Customer with id : "+productOrder.getCustomer_id()+" doesn't exist!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrder);
+        }
+        mappedProductOrder.setCustomer(user);
+
+        ProductOrder result = productOrderService.save(mappedProductOrder);
         return ResponseEntity
                 .created(new URI("/api/product-orders/" + result.getId()))
                 .body(productOrderMapper.toDto(result, "product order created successfully !"));

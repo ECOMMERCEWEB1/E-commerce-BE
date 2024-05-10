@@ -45,6 +45,8 @@ public class ProductOrderService {
      */
     public ProductOrder save(ProductOrder productOrder) {
         log.debug("Request to save ProductOrder : {}", productOrder);
+
+
         return productOrderRepository.save(setProductOrderDetails(productOrder));
     }
     private String generateCode() {
