@@ -33,11 +33,6 @@ public class OrderItem implements Serializable {
     @Column(name = "total_price", precision = 21, scale = 2, nullable = false)
     private BigDecimal totalPrice;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private OrderItemStatus status;
-
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(value = { "productCategory" }, allowSetters = true)
@@ -85,19 +80,6 @@ public class OrderItem implements Serializable {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
-    }
-
-    public OrderItemStatus getStatus() {
-        return this.status;
-    }
-
-    public OrderItem status(OrderItemStatus status) {
-        this.setStatus(status);
-        return this;
-    }
-
-    public void setStatus(OrderItemStatus status) {
-        this.status = status;
     }
 
     public Product getProduct() {
@@ -148,7 +130,6 @@ public class OrderItem implements Serializable {
                 "id=" + getId() +
                 ", quantity=" + getQuantity() +
                 ", totalPrice=" + getTotalPrice() +
-                ", status='" + getStatus() + "'" +
                 "}";
     }
 }

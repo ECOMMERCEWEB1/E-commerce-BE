@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.webproject.ecommerce.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -24,25 +25,21 @@ public class ProductOrder implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
     @Column(name = "placed_date", nullable = false)
     private Instant placedDate;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
 
-    @NotNull
     @Column(name = "code", nullable = false)
     private String code;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JsonIgnoreProperties(value={"order"})
     private Invoice invoice;
 
-    @NotNull
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch =  FetchType.EAGER)
     @JsonIgnoreProperties(value = {"orders"}, allowSetters= true)
     private User customer;
 
@@ -183,7 +180,6 @@ public class ProductOrder implements Serializable {
                 ", placedDate='" + getPlacedDate() + "'" +
                 ", status='" + getStatus() + "'" +
                 ", code='" + getCode() + "'" +
-                ", invoiceId=" + getInvoice().getId() +
                 ", customer='" + getCustomer() + "'" +
                 "}";
     }

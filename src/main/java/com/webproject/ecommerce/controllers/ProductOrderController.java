@@ -2,12 +2,15 @@ package com.webproject.ecommerce.controllers;
 
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
+import com.webproject.ecommerce.entities.Product;
+import com.webproject.ecommerce.entities.Invoice;
 import com.webproject.ecommerce.entities.ProductOrder;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.mappers.ProductOrderMapper;
 import com.webproject.ecommerce.repositories.ProductOrderRepository;
 import com.webproject.ecommerce.repositories.UsersRepository;
 import com.webproject.ecommerce.services.ProductOrderService;
+import com.webproject.ecommerce.services.ProductsService;
 import com.webproject.ecommerce.services.UsersService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/product-orders")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials= "true")
 public class ProductOrderController {
 
     private final Logger log = LoggerFactory.getLogger(ProductOrderController.class);
@@ -41,11 +45,14 @@ public class ProductOrderController {
 
     private final UsersService usersRepository;
 
-    public ProductOrderController(UsersService usersRepository,ProductOrderMapper productOrderMapper,ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
+    private final ProductsService productsService;
+
+    public ProductOrderController(ProductsService productsService,UsersService usersRepository,ProductOrderMapper productOrderMapper,ProductOrderService productOrderService, ProductOrderRepository productOrderRepository) {
         this.productOrderService = productOrderService;
         this.productOrderRepository = productOrderRepository;
         this.productOrderMapper = productOrderMapper;
         this.usersRepository = usersRepository;
+        this.productsService = productsService;
     }
 
     /**
@@ -57,12 +64,23 @@ public class ProductOrderController {
      */
     @PostMapping("")
     public ResponseEntity<ProductOrderDTO> createProductOrder(@Valid @RequestBody ProductOrderDTO productOrder) throws URISyntaxException {
-        log.debug("REST request to save ProductOrder : {}", productOrder);
+         log.debug("REST request to save ProductOrder : {}", productOrder.getOrderItems());
         if (productOrder.getId() != null) {
             productOrder.setMessage("Product Order already has an Id !");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrder);
         }
         ProductOrder mappedProductOrder = productOrderMapper.toEntity(productOrder);
+        mappedProductOrder.getOrderItems().stream().map(orderItem ->{
+            if (!productsService.productIdExists(orderItem.getProduct().getId())){
+                productOrder.setMessage("Product with id : "+orderItem.getProduct().getId()+" doesn't exist!");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productOrder);
+
+            }
+            Optional<Product> product = productsService.findOne(orderItem.getId());
+                orderItem.setProduct(product.get());
+            return orderItem;
+        });
+
         User user = this.usersRepository.getUserById(mappedProductOrder.getCustomer().getId());
         if (user==null){
             productOrder.setMessage("Customer with id : "+productOrder.getCustomer_id()+" doesn't exist!");
@@ -211,6 +229,12 @@ public class ProductOrderController {
         return ResponseEntity.ok().body(count);
     }
 
-
+    @PutMapping("/{orderId}/invoice")
+    public ResponseEntity<ProductOrder> updateInvoiceForOrder(
+            @PathVariable Long orderId,
+            @RequestBody Invoice invoice) {
+        ProductOrder updatedOrder = productOrderService.updateInvoiceForOrder(orderId, invoice);
+        return ResponseEntity.ok(updatedOrder);
+    }
 }
 

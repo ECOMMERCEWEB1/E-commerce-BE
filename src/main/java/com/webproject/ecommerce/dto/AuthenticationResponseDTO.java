@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AuthenticationResponseDTO {
-    // PROBABLY GOING TO BE SET TO COOKIES... [ FOR NOW KEPT AS RESPONSE ]
     private String token;
     private String message;
     private Boolean isAdmin;

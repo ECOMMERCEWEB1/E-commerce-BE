@@ -1,11 +1,13 @@
 package com.webproject.ecommerce.services;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Random;
 
 import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.Invoice;
+import com.webproject.ecommerce.entities.OrderItem;
 import com.webproject.ecommerce.entities.ProductOrder;
 import com.webproject.ecommerce.enums.InvoiceStatus;
 import com.webproject.ecommerce.enums.OrderStatus;
@@ -44,8 +46,7 @@ public class ProductOrderService {
      * @return the persisted entity.
      */
     public ProductOrder save(ProductOrder productOrder) {
-        log.debug("Request to save ProductOrder : {}", productOrder);
-
+        log.debug("Request to save ProductOrder : {}", productOrder.getCustomer().getId());
 
         return productOrderRepository.save(setProductOrderDetails(productOrder));
     }
@@ -59,9 +60,25 @@ public class ProductOrderService {
         }
         return code.toString();
     }
+    private Invoice createInvoiceFromOrder(ProductOrder order) {
+        Invoice invoice = new Invoice();
+        // Set invoice properties based on order and its items
+        // For simplicity, let's assume some values
+        invoice.setCode("INV-" + order.getCode());
+        invoice.setDate(Instant.now());
+        invoice.setStatus(InvoiceStatus.ISSUED);
+        // Calculate total price from order items
+        BigDecimal totalPrice = order.getOrderItems().stream()
+                .map(OrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        invoice.setPaymentAmount(totalPrice);
+        return invoiceRepository.save(invoice);
+    }
     private ProductOrder setProductOrderDetails(ProductOrder po){
         po.setCode(generateCode());
         po.setPlacedDate(Instant.now());
+        po.setStatus(OrderStatus.PENDING);
+        po.setInvoice(createInvoiceFromOrder(po));
         return po;
     }
 
@@ -176,5 +193,24 @@ public class ProductOrderService {
     public Long count(){
         return productOrderRepository.count();
     }
+
+    @Transactional
+    public ProductOrder updateInvoiceForOrder(Long orderId, Invoice invoiceData) {
+        ProductOrder order = productOrderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Product Order not found with id: " + orderId));
+        Invoice invoice = order.getInvoice();
+        invoice.setCode(invoiceData.getCode());
+        invoice.setDate(invoiceData.getDate());
+        invoice.setDetails(invoiceData.getDetails());
+        invoice.setStatus(invoiceData.getStatus());
+        invoice.setPaymentMethod(invoiceData.getPaymentMethod());
+        invoice.setPaymentDate(invoiceData.getPaymentDate());
+        invoice.setPaymentAmount(invoiceData.getPaymentAmount());
+        invoice = invoiceRepository.save(invoice);
+        order.setInvoice(invoice);
+
+        return productOrderRepository.save(order);
+    }
 }
+
 

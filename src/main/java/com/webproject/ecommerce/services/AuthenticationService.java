@@ -56,7 +56,10 @@ public class AuthenticationService {
             if (jwtService.isTokenValid(jwtToken, userDetails)){
              String username = jwtService.extractUsername(jwtToken);
              Optional<User> user = usersRepository.findUserByEmail(username);
-                return user.orElse(null);
+                if (user.get() != null){
+                    return user.get();
+                }
+                return null;
         }
         }
         return null;
