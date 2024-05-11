@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.webproject.ecommerce.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.util.Set;
 /**
  * A ProductOrder.
  */
+@NoArgsConstructor
 @Entity
 @Table(name = "product_order")
 public class ProductOrder implements Serializable {

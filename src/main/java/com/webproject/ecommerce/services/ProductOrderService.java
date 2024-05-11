@@ -44,8 +44,7 @@ public class ProductOrderService {
      * @return the persisted entity.
      */
     public ProductOrder save(ProductOrder productOrder) {
-        log.debug("Request to save ProductOrder : {}", productOrder);
-
+        log.debug("Request to save ProductOrder : {}", productOrder.getCustomer().getId());
 
         return productOrderRepository.save(setProductOrderDetails(productOrder));
     }
@@ -62,6 +61,7 @@ public class ProductOrderService {
     private ProductOrder setProductOrderDetails(ProductOrder po){
         po.setCode(generateCode());
         po.setPlacedDate(Instant.now());
+        po.setStatus(OrderStatus.PENDING);
         return po;
     }
 
