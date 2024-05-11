@@ -1,13 +1,17 @@
 package com.webproject.ecommerce.mappers;
 
+import com.webproject.ecommerce.dto.OrderItemDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.Invoice;
+import com.webproject.ecommerce.entities.OrderItem;
 import com.webproject.ecommerce.entities.ProductOrder;
 import com.webproject.ecommerce.entities.User;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface ProductOrderMapper {
@@ -24,6 +28,20 @@ public interface ProductOrderMapper {
     @Named("mapToInvoiceId")
     default Long mapToInvoiceId(Invoice invoice){
         return invoice.getId();
+    }
+
+    Set<OrderItemDTO> mapToOrderItemDTOs(Set<OrderItem> orderItems);
+
+    default OrderItemDTO mapToOrderItemDTO(OrderItem orderItem) {
+        if (orderItem == null) {
+            return null;
+        }
+        OrderItemDTO dto = new OrderItemDTO();
+        dto.setQuantity(orderItem.getQuantity());
+        dto.setTotalPrice(orderItem.getTotalPrice());
+        dto.setStatus(orderItem.getStatus());
+        dto.setProduct_id(orderItem.getProduct().getId());
+        return dto;
     }
 
     @Mapping(target = "customer", source = "customer_id", qualifiedByName = "mapToUser")

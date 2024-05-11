@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 public class ProductOrderDTO {
     private Long id;
-    private Set<OrderItem> orderItems;
+    private Set<OrderItemDTO> orderItems;
     private String message;
     private Long customer_id;
     private String code;
