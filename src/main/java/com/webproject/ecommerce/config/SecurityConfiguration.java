@@ -27,6 +27,8 @@ public class SecurityConfiguration {
                 auth.requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/signup").permitAll()
                         .requestMatchers("/api/auth").permitAll()
+                        .requestMatchers("/api/reset-password").permitAll()
+                        .requestMatchers("/api/send-reset").permitAll()
                         .requestMatchers("/api/logout").authenticated()
                         .requestMatchers("/api/users/count").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
                         .requestMatchers("/api/users").hasAnyAuthority(Role.ADMIN.name(),Role.SUPER_ADMIN.name())
