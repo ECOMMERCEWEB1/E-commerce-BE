@@ -39,13 +39,11 @@ public class Invoice implements Serializable {
     @Column(name = "status", nullable = false)
     private InvoiceStatus status;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
-    @NotNull
-    @Column(name = "payment_date", nullable = false)
+    @Column(name = "payment_date")
     private Instant paymentDate;
 
     @NotNull

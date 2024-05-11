@@ -14,7 +14,6 @@ import java.util.Set;
 /**
  * A ProductOrder.
  */
-@NoArgsConstructor
 @Entity
 @Table(name = "product_order")
 public class ProductOrder implements Serializable {
@@ -26,16 +25,13 @@ public class ProductOrder implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
     @Column(name = "placed_date", nullable = false)
     private Instant placedDate;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
 
-    @NotNull
     @Column(name = "code", nullable = false)
     private String code;
 
@@ -43,7 +39,6 @@ public class ProductOrder implements Serializable {
     @JsonIgnoreProperties(value={"order"})
     private Invoice invoice;
 
-    @NotNull
     @ManyToOne(fetch =  FetchType.LAZY)
     @JsonIgnoreProperties(value = {"orders"}, allowSetters= true)
     private User customer;
@@ -185,7 +180,6 @@ public class ProductOrder implements Serializable {
                 ", placedDate='" + getPlacedDate() + "'" +
                 ", status='" + getStatus() + "'" +
                 ", code='" + getCode() + "'" +
-                ", invoiceId=" + getInvoice().getId() +
                 ", customer='" + getCustomer() + "'" +
                 "}";
     }

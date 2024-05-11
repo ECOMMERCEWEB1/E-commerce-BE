@@ -65,9 +65,6 @@ public class OrderItemService {
                     if (orderItem.getTotalPrice() != null) {
                         existingOrderItem.setTotalPrice(orderItem.getTotalPrice());
                     }
-                    if (orderItem.getStatus() != null) {
-                        existingOrderItem.setStatus(orderItem.getStatus());
-                    }
 
                     return existingOrderItem;
                 })
