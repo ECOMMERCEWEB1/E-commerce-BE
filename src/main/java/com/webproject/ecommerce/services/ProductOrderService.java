@@ -176,5 +176,24 @@ public class ProductOrderService {
     public Long count(){
         return productOrderRepository.count();
     }
+
+    @Transactional
+    public ProductOrder updateInvoiceForOrder(Long orderId, Invoice invoiceData) {
+        ProductOrder order = productOrderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Product Order not found with id: " + orderId));
+        Invoice invoice = order.getInvoice();
+        invoice.setCode(invoiceData.getCode());
+        invoice.setDate(invoiceData.getDate());
+        invoice.setDetails(invoiceData.getDetails());
+        invoice.setStatus(invoiceData.getStatus());
+        invoice.setPaymentMethod(invoiceData.getPaymentMethod());
+        invoice.setPaymentDate(invoiceData.getPaymentDate());
+        invoice.setPaymentAmount(invoiceData.getPaymentAmount());
+        invoice = invoiceRepository.save(invoice);
+        order.setInvoice(invoice);
+
+        return productOrderRepository.save(order);
+    }
 }
+
 
