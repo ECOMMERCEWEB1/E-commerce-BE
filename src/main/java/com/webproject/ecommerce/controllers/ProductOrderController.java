@@ -1,5 +1,6 @@
 package com.webproject.ecommerce.controllers;
 
+import com.webproject.ecommerce.dto.InvoiceDTO;
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.Product;
@@ -64,7 +65,6 @@ public class ProductOrderController {
      */
     @PostMapping("")
     public ResponseEntity<ProductOrderDTO> createProductOrder(@Valid @RequestBody ProductOrderDTO productOrder) throws URISyntaxException {
-         log.debug("REST request to save ProductOrder : {}", productOrder.getOrderItems());
         if (productOrder.getId() != null) {
             productOrder.setMessage("Product Order already has an Id !");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productOrder);
@@ -232,7 +232,7 @@ public class ProductOrderController {
     @PutMapping("/{orderId}/invoice")
     public ResponseEntity<ProductOrder> updateInvoiceForOrder(
             @PathVariable Long orderId,
-            @RequestBody Invoice invoice) {
+            @RequestBody InvoiceDTO invoice) {
         ProductOrder updatedOrder = productOrderService.updateInvoiceForOrder(orderId, invoice);
         return ResponseEntity.ok(updatedOrder);
     }
