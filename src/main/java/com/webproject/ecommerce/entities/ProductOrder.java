@@ -35,11 +35,11 @@ public class ProductOrder implements Serializable {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JsonIgnoreProperties(value={"order"})
     private Invoice invoice;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch =  FetchType.EAGER)
     @JsonIgnoreProperties(value = {"orders"}, allowSetters= true)
     private User customer;
 

@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/product-orders")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials= "true")
 public class ProductOrderController {
 
     private final Logger log = LoggerFactory.getLogger(ProductOrderController.class);
