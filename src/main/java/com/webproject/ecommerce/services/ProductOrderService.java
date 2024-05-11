@@ -105,9 +105,6 @@ public class ProductOrderService {
         return productOrderRepository
                 .findById(productOrder.getId())
                 .map(existingProductOrder -> {
-                    if (productOrder.getPlacedDate() != null) {
-                        existingProductOrder.setPlacedDate(productOrder.getPlacedDate());
-                    }
                     if (productOrder.getStatus() == OrderStatus.CANCELLED) {
                         if(existingProductOrder.getInvoice().getStatus().equals(InvoiceStatus.PAID)) {
                             throw new RuntimeException("Order already paid for, can not cancel!");
