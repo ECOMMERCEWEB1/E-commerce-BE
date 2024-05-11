@@ -2,6 +2,7 @@ package com.webproject.ecommerce.controllers;
 
 import com.webproject.ecommerce.dto.MessageDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
+import com.webproject.ecommerce.entities.Invoice;
 import com.webproject.ecommerce.entities.ProductOrder;
 import com.webproject.ecommerce.repositories.ProductOrderRepository;
 import com.webproject.ecommerce.services.ProductOrderService;
@@ -191,6 +192,12 @@ public class ProductOrderController {
         return ResponseEntity.ok().body(count);
     }
 
-
+    @PutMapping("/{orderId}/invoice")
+    public ResponseEntity<ProductOrder> updateInvoiceForOrder(
+            @PathVariable Long orderId,
+            @RequestBody Invoice invoice) {
+        ProductOrder updatedOrder = productOrderService.updateInvoiceForOrder(orderId, invoice);
+        return ResponseEntity.ok(updatedOrder);
+    }
 }
 
