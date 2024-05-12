@@ -125,6 +125,6 @@ public class UsersController {
             usersService.deleteUser(id);
         else
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("User does not exist !"));
-        return ResponseEntity.ok().body(new MessageDTO("User Deleted Successfully !"));
+        return ResponseEntity.accepted().body(new MessageDTO("User Deleted Successfully !"));
     }
 }

@@ -163,7 +163,7 @@ public class ProductsController {
      * {@code DELETE  /products/:id} : delete the "id" product.
      *
      * @param id the id of the product to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)},
+     * @return the {@link ResponseEntity} with status {@code 202 (ACCEPTED)},
      * or with status {@code 404 (Not Found)} if the product couldn't be found.
      */
     @DeleteMapping("/products/{id}")
@@ -176,7 +176,7 @@ public class ProductsController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new MessageDTO("Product Deleted Successfully !"));
         }
         else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Product does not exist"));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessageDTO("Product does not exist"));
     }
 
 }

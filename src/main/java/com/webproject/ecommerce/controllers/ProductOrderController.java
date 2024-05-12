@@ -203,7 +203,7 @@ public class ProductOrderController {
      * {@code DELETE  /product-orders/:id} : delete the "id" productOrder.
      *
      * @param id the id of the productOrder to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     * @return the {@link ResponseEntity} with status {@code 202 (ACCEPTED)}.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProductOrder(@PathVariable("id") Long id) {
@@ -212,7 +212,7 @@ public class ProductOrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Product Order does not exist"));
         productOrderService.delete(id);
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.ACCEPTED)
                 .body(new MessageDTO("Product Order Deleted Successfully!"));
     }
     /**

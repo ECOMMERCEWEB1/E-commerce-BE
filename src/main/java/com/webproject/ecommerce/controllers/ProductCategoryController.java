@@ -167,17 +167,22 @@ public class ProductCategoryController {
      * {@code DELETE  /product-categories/:id} : delete the "id" productCategory.
      *
      * @param id the id of the productCategory to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     * @return the {@link ResponseEntity} with status {@code 202 (ACCEPTED)}.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProductCategory(@PathVariable("id") Long id) {
         log.debug("REST request to delete ProductCategory : {}", id);
         if(productCategoryService.findOne(id).isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Product Category does not exist"));
-        productCategoryService.delete(id);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(new MessageDTO("Product Category Deleted Successfully !"));
+        try{
+            productCategoryService.delete(id);
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .body(new MessageDTO("Product Category Deleted Successfully !"));
+        }
+        catch (Exception e){
+            return ResponseEntity.internalServerError().body(new MessageDTO("Error: "+e.getMessage()));
+        }
 
     }
 }

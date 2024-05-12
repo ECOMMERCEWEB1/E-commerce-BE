@@ -102,7 +102,6 @@ public class ProductOrderService {
      */
     public Optional<ProductOrder> partialOrderUpdate(ProductOrder productOrder) throws RuntimeException {
         log.debug("Request to partially update ProductOrder : {}", productOrder);
-
         return productOrderRepository
                 .findById(productOrder.getId())
                 .map(existingProductOrder -> {
