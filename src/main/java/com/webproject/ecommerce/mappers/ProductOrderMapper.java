@@ -13,9 +13,9 @@ import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface ProductOrderMapper {
-    @Mapping(target = "customer_id", source = "customer", qualifiedByName = "mapToUserId")
-    @Mapping(target = "invoice_id", source = "invoice", qualifiedByName = "mapToInvoiceId")
-    ProductOrderDTO toDto(ProductOrder productOrder, @Context String message);
+    @Mapping(target = "customer_id", source = "productOrder.customer", qualifiedByName = "mapToUserId")
+    @Mapping(target = "invoice_id", source = "productOrder.invoice", qualifiedByName = "mapToInvoiceId")
+    ProductOrderDTO toDto(ProductOrder productOrder, String message);
 
     @Named("mapToUserId")
     default Long mapToUserId(User customer){

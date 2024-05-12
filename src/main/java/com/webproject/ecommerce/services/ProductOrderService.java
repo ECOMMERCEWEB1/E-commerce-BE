@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.Random;
 
+import com.webproject.ecommerce.dto.InvoiceDTO;
 import com.webproject.ecommerce.dto.ProductOrderDTO;
 import com.webproject.ecommerce.entities.Invoice;
 import com.webproject.ecommerce.entities.OrderItem;
@@ -105,9 +106,6 @@ public class ProductOrderService {
         return productOrderRepository
                 .findById(productOrder.getId())
                 .map(existingProductOrder -> {
-                    if (productOrder.getPlacedDate() != null) {
-                        existingProductOrder.setPlacedDate(productOrder.getPlacedDate());
-                    }
                     if (productOrder.getStatus() == OrderStatus.CANCELLED) {
                         if(existingProductOrder.getInvoice().getStatus().equals(InvoiceStatus.PAID)) {
                             throw new RuntimeException("Order already paid for, can not cancel!");
@@ -195,17 +193,13 @@ public class ProductOrderService {
     }
 
     @Transactional
-    public ProductOrder updateInvoiceForOrder(Long orderId, Invoice invoiceData) {
+    public ProductOrder updateInvoiceForOrder(Long orderId, InvoiceDTO invoiceData) {
         ProductOrder order = productOrderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Product Order not found with id: " + orderId));
         Invoice invoice = order.getInvoice();
-        invoice.setCode(invoiceData.getCode());
-        invoice.setDate(invoiceData.getDate());
-        invoice.setDetails(invoiceData.getDetails());
-        invoice.setStatus(invoiceData.getStatus());
+        invoice.setStatus(invoiceData.getInvoiceStatus());
         invoice.setPaymentMethod(invoiceData.getPaymentMethod());
-        invoice.setPaymentDate(invoiceData.getPaymentDate());
-        invoice.setPaymentAmount(invoiceData.getPaymentAmount());
+        invoice.setPaymentDate(Instant.now());
         invoice = invoiceRepository.save(invoice);
         order.setInvoice(invoice);
 

@@ -1,14 +1,12 @@
 package com.webproject.ecommerce.controllers;
 
 import com.webproject.ecommerce.config.JwtService;
-import com.webproject.ecommerce.dto.AuthenticationResponseDTO;
-import com.webproject.ecommerce.dto.LoginDTO;
-import com.webproject.ecommerce.dto.MessageDTO;
-import com.webproject.ecommerce.dto.SignUpDTO;
+import com.webproject.ecommerce.dto.*;
 import com.webproject.ecommerce.entities.User;
 import com.webproject.ecommerce.mappers.UserMapper;
 import com.webproject.ecommerce.repositories.UsersRepository;
 import com.webproject.ecommerce.services.AuthenticationService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -76,5 +74,17 @@ public class AuthenticationController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         authenticationService.logout(response);
         return ResponseEntity.ok(new MessageDTO("User logged out successfully !"));
+    }
+    @CrossOrigin(value="http://localhost:4200",allowCredentials = "true")
+    @PostMapping("/send-reset")
+    public ResponseEntity<?> sendReset(@RequestBody SendResetDTO sendResetDTO) throws MessagingException {
+        authenticationService.sendReset(sendResetDTO.getEmail());
+        return ResponseEntity.ok(new MessageDTO("An email was sent to reset your password"));
+    }
+    @CrossOrigin(value="http://localhost:4200",allowCredentials = "true")
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> sendReset(@RequestBody ResetPasswordDTO resetPasswordDTO) throws MessagingException {
+        authenticationService.resetPassword(resetPasswordDTO.getToken(),resetPasswordDTO.getId(),resetPasswordDTO.getPassword());
+        return ResponseEntity.ok(new MessageDTO("Password was set successfully !"));
     }
 }

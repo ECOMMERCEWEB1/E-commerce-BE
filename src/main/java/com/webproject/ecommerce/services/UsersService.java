@@ -50,6 +50,10 @@ public class UsersService {
     public boolean userEmailExists(String email){
         return usersRepository.findUserByEmail(email).isPresent();
     }
+
+    public Optional<User> findByEmail(String email){
+        return usersRepository.findUserByEmail(email);
+    }
     public boolean userIdExists(Long id){
         return usersRepository.existsById(id);
     }
@@ -82,6 +86,14 @@ public class UsersService {
        if(role!= null)db_user.setEnabled(isEnabled);
        usersRepository.save(db_user);
        return db_user;
+    }
+    public void updatePassword(Long id, String password){
+        Optional<User> user = usersRepository.findUserById(id);
+        if (user.isPresent()) {
+            user.get().setPassword(password);
+            user.get().setPassword(new BCryptPasswordEncoder().encode(password));
+            usersRepository.save(user.get());
+        }
     }
     public void deleteUser(Long id){
         usersRepository.deleteById(id);

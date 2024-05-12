@@ -48,8 +48,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.PATCH,"/api/product-order/**").hasAnyAuthority(Role.CLIENT.name(),Role.ADMIN.name())
                                 .requestMatchers("/api/invoices/**").hasAnyAuthority(Role.CLIENT.name(),Role.ADMIN.name())
                                 .anyRequest()
-                                .authenticated()
-                )
+                                .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
